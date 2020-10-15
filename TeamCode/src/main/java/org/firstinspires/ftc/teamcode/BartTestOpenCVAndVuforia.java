@@ -12,15 +12,14 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 
 @TeleOp(name="BartTestOpenCVAndVuforia", group="Linear Opmode")
 //@Disabled
-public class BartTestOpenCVAndVuforia extends EasyOpenCVExample {
+public class BartTestOpenCVAndVuforia extends LinearOpMode {
     OpenCvInternalCamera phoneCam;
     EasyOpenCVExample.SkystoneDeterminationPipeline pipeline;
     private ElapsedTime runtimeB = new ElapsedTime();
-    //private EasyOpenCVExample OpenCV = new EasyOpenCVExample();
 
     @Override
     public void runOpMode() {
-       int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         pipeline = new EasyOpenCVExample.SkystoneDeterminationPipeline();
         phoneCam.setPipeline(pipeline);
@@ -36,13 +35,12 @@ public class BartTestOpenCVAndVuforia extends EasyOpenCVExample {
                 phoneCam.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
             }
         });
-       //OpenCV.setupOpMode();
+        //OpenCV.setupOpMode();
         waitForStart();
         runtimeB.reset();
 
         while (opModeIsActive()) {
             telemetry.addData("Position", EasyOpenCVExample.SkystoneDeterminationPipeline.position);
-            //telemetry.addData("Position", ConceptVuforiaUltimateGoalNavigation.r);
             telemetry.addData("Status", "Run Time: " + runtimeB.toString());
             telemetry.update();
         }

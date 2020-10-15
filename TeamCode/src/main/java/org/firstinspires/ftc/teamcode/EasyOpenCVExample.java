@@ -41,7 +41,6 @@ public class EasyOpenCVExample extends LinearOpMode
 {
     OpenCvInternalCamera phoneCam;
     SkystoneDeterminationPipeline pipeline;
-
     @Override
     public void runOpMode()
     {
