@@ -174,7 +174,7 @@ public class Drive {
         public DcMotor.Direction rlPolarity  = DcMotor.Direction.REVERSE;
         public DcMotor.Direction cenPolarity = DcMotor.Direction.FORWARD;
         public BNO055IMU      imu            = null;
-        public DriveType      driveType      = DriveType.TANK;
+        public DriveType      driveType      = DriveType.MECANUM;
         public double         motorRatio     = 28;
         public double         gearRatio      = 40;
         public double         wheelDiameter  = 2.5;
