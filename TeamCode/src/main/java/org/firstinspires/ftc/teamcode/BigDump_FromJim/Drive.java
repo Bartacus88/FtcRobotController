@@ -174,7 +174,7 @@ public class Drive {
         public DcMotor.Direction rlPolarity  = DcMotor.Direction.REVERSE;
         public DcMotor.Direction cenPolarity = DcMotor.Direction.FORWARD;
         public BNO055IMU      imu            = null;
-        public DriveType      driveType      = DriveType.MECANUM;
+        public DriveType      driveType      = DriveType.TANK;
         public double         motorRatio     = 28;
         public double         gearRatio      = 40;
         public double         wheelDiameter  = 2.5;
@@ -574,8 +574,6 @@ public class Drive {
                     maneuver.rearRightTarget = -1 * maneuver.rightTarget;
                     maneuver.rearLeftTarget = maneuver.rightTarget;
                     maneuver.centerTarget = 0;
-
-                    break;
                 }
                 if (par.driveType == DriveType.OMNI_H) {
                     maneuver.rightTarget = 0;
