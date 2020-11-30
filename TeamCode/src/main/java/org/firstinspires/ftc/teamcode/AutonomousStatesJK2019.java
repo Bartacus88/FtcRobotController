@@ -122,15 +122,19 @@ public class AutonomousStatesJK2019 {
          *  CONFIGURE THE DRIVE TRAIN  THIS IS ROBOT SPECIFIC
          *****************************************************/
         Drive.Parameters dParm = robotDrive.getParameters();
-        dParm.frontRight       = robot.right;
-        dParm.frontLeft        = robot.left;
-        dParm.rearRight        = robot.right;  //Should be unnecessary, but just keep the nulls away
-        dParm.rearLeft         = robot.left;
+        //Why didn't the example have these two lines below?  I, spent hours with this not working, until I added these.
+        dParm.cenPolarity      = DcMotorSimple.Direction.FORWARD;
+        dParm.center           = robot.rightFront; //Just to remove error, serves no purpose as far as I can tell
+
+        dParm.frontRight       = robot.rightFront;
+        dParm.frontLeft        = robot.leftFront;
+        dParm.rearRight        = robot.rightRear;  //Should be unnecessary, but just keep the nulls away
+        dParm.rearLeft         = robot.leftRear;
         dParm.frPolarity       = DcMotorSimple.Direction.FORWARD;
         dParm.flPolarity       = DcMotorSimple.Direction.REVERSE;
         dParm.rrPolarity       = DcMotorSimple.Direction.FORWARD;
         dParm.rlPolarity       = DcMotorSimple.Direction.REVERSE;
-        dParm.driveType        = Drive.DriveType.TANK;
+        dParm.driveType        = Drive.DriveType.MECANUM;
         dParm.imu              = robot.imu;
         dParm.motorRatio       = 28;
         dParm.gearRatio        = 20;

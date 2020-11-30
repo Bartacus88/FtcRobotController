@@ -141,8 +141,8 @@ public class DriverModeJK2019 extends LinearOpMode {
                 LastMotor = CurrentTime;
                 // Yes, we'll set the power each time, even if it's zero.
                 // this way we don't accidentally leave it somewhere.  Just simpler this way.
-                robot.left.setPower(leftCmd);
-                robot.right.setPower(rightCmd);
+                robot.leftFront.setPower(leftCmd);
+                robot.rightFront.setPower(rightCmd);
 
             }
 
@@ -165,9 +165,8 @@ public class DriverModeJK2019 extends LinearOpMode {
         }
 
         //SAFE EXIT OF RUN OPMODE, stop motors, leave servos????
-        robot.left.setPower(0);
-        robot.right.setPower(0);
-
+        robot.leftFront.setPower(0);
+        robot.rightFront.setPower(0);
     }
 
 

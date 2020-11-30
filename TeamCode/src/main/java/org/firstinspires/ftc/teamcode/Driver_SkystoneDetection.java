@@ -168,7 +168,7 @@ public class Driver_SkystoneDetection extends LinearOpMode {
              ****************************************************/
             if (CurrentTime - LastServo > SERVOPERIOD) {
                 LastServo = CurrentTime;
-                robot.extension.setPower(extensionCmd);
+                //robot.extension.setPower(extensionCmd);
             }
 
 
