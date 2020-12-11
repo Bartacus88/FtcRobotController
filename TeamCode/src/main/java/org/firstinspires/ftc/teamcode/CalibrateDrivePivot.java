@@ -9,6 +9,7 @@ package org.firstinspires.ftc.teamcode;
  */
 import android.os.SystemClock;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 @SuppressWarnings("WeakerAccess")
 @TeleOp(name = "Calibrate Pivot", group = "K9Bot")
+@Disabled
 public class CalibrateDrivePivot extends LinearOpMode {
     private Drive robotDrive              = new Drive();
 

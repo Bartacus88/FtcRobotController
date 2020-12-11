@@ -83,10 +83,10 @@ public class HardwareDefinitionJK2019
     public enum STATUS {SUCCESS, IMU_FAIL, VISION_FAIL, };
 
     /* MOTORS */
-    public DcMotor  leftFront  = null;
-    public DcMotor  rightFront = null;
-    public DcMotor  leftRear   = null;
-    public DcMotor  rightRear  = null;
+    public DcMotor  frontLeft = null;
+    public DcMotor  frontRight = null;
+    public DcMotor  backLeft   = null;
+    public DcMotor  backRight  = null;
 
     /*SERVOS*/
     //public Servo    exampleServo = null;
@@ -101,7 +101,7 @@ public class HardwareDefinitionJK2019
     //public TouchSensor exampleTouch = null;
     //public DistanceSensor exampleDistance = null;
     //public AnalogInput  exampleAnalog = null;
-    public ColorSensor color1 = null;
+    //public ColorSensor color1 = null;
 
 
     /* local OpMode members. */
@@ -121,36 +121,38 @@ public class HardwareDefinitionJK2019
         STATUS retCode = STATUS.SUCCESS;
 
         //Define and Initialize MOTORS
-        leftFront   = hwMap.get(DcMotor.class, "left_front");
-        rightFront  = hwMap.get(DcMotor.class, "right_front");
-        leftRear    = hwMap.get(DcMotor.class, "left_rear");
-        rightRear   = hwMap.get(DcMotor.class, "right_rear");
+        frontRight      = hwMap.get(DcMotor.class, "front_right");
+        frontLeft       = hwMap.get(DcMotor.class, "front_left");
+        backRight       = hwMap.get(DcMotor.class, "back_right");
+        backLeft        = hwMap.get(DcMotor.class, "back_left");
+
 
         //Take care with direction configuration.   Make sure the concept of front and rear is the
         //same between autonomous code and driver code.
-        leftFront.setDirection(DcMotor.Direction.FORWARD);
-        rightFront.setDirection(DcMotor.Direction.REVERSE);
-        leftRear.setDirection(DcMotor.Direction.FORWARD);
-        rightRear.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.FORWARD);
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.FORWARD);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
 
         // Set all motors to zero power
-        leftFront.setPower(0);
-        rightFront.setPower(0);
-        leftRear.setPower(0);
-        rightRear.setPower(0);
+        frontRight.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        backLeft.setPower(0);
 
         //Setting the mode can be a little on the tricky side.   Different manufacturers motors
         //have different behaviours around their encoders based on how the code is initialized.
         //Presently STOP_AND_RESET followed by RUN_WITHOUT seems to get REV, AndyMark, and GoBilda
         //all into the correct state.
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //Define and Initialize SERVOS
         //exampleServo = hwMap.get(Servo.class, "myServo");
@@ -167,7 +169,7 @@ public class HardwareDefinitionJK2019
         //exampleTouch = hwMap.get(TouchSensor.class, "touchMe");
         //exampleDistance = hwMap.get(DistanceSensor.class, "farFarAway");
         //exampleAnalog = hwMap.get(AnalogInput.class, "myPotentiometer");
-        color1 = hwMap.get(ColorSensor.class, "color1");
+        //color1 = hwMap.get(ColorSensor.class, "color1");
 
         //exampleColor.enableLed(true);
 

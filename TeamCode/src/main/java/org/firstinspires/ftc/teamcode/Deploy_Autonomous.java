@@ -11,10 +11,12 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 @Autonomous(name="Deploy", group="Pushbot")
+@Disabled
 @SuppressWarnings("WeakerAccess")
 public class Deploy_Autonomous extends LinearOpMode {
 

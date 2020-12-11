@@ -93,7 +93,7 @@ public class AutonomousStates {
     //Define Robot Hardware and classes here
     private HardwareDefenition robot        = new HardwareDefenition();   //Remap to your robot
     private Drive robotDrive                = new Drive();
-    private GoldBlockDetection blockDetect  = new GoldBlockDetection();
+    //private GoldBlockDetection blockDetect  = new GoldBlockDetection();
     private LinearActuator lift    = new LinearActuator();
     private LinearActuator pivot    = new LinearActuator();
     private LinearActuator cascade    = new LinearActuator();
@@ -268,15 +268,15 @@ public class AutonomousStates {
                             stage_complete = true;
                         }
                         break;
-                    case GOLD_DETECT:
-                        GoldBlockDetection.LOCATION location;
-                        location = blockDetect.detectGoldBlock(cmd[CurrentAutoState].timeLimit-10);  //Subtract a little for overhead.
-                        opMode.telemetry.clear();
-                        opMode.telemetry.addData("GOLD BLOCK IS ", location);
-                        opMode.telemetry.update();
-                        SystemClock.sleep(5000);
-                        stage_complete = true;
-                        break;
+//                    case GOLD_DETECT:
+//                        GoldBlockDetection.LOCATION location;
+//                        location = blockDetect.detectGoldBlock(cmd[CurrentAutoState].timeLimit-10);  //Subtract a little for overhead.
+//                        opMode.telemetry.clear();
+//                        opMode.telemetry.addData("GOLD BLOCK IS ", location);
+//                        opMode.telemetry.update();
+//                        SystemClock.sleep(5000);
+//                        stage_complete = true;
+//                        break;
                     case PAUSE:
                         break;
                     case WAIT:

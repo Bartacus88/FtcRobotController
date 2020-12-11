@@ -124,12 +124,12 @@ public class AutonomousStatesJK2019 {
         Drive.Parameters dParm = robotDrive.getParameters();
         //Why didn't the example have these two lines below?  I, spent hours with this not working, until I added these.
         dParm.cenPolarity      = DcMotorSimple.Direction.FORWARD;
-        dParm.center           = robot.rightFront; //Just to remove error, serves no purpose as far as I can tell
+        dParm.center           = robot.frontRight; //Just to remove error, serves no purpose as far as I can tell
 
-        dParm.frontRight       = robot.rightFront;
-        dParm.frontLeft        = robot.leftFront;
-        dParm.rearRight        = robot.rightRear;  //Should be unnecessary, but just keep the nulls away
-        dParm.rearLeft         = robot.leftRear;
+        dParm.frontRight       = robot.frontRight;
+        dParm.frontLeft        = robot.frontRight;
+        dParm.rearRight        = robot.backRight;  //Should be unnecessary, but just keep the nulls away
+        dParm.rearLeft         = robot.backLeft;
         dParm.frPolarity       = DcMotorSimple.Direction.FORWARD;
         dParm.flPolarity       = DcMotorSimple.Direction.REVERSE;
         dParm.rrPolarity       = DcMotorSimple.Direction.FORWARD;

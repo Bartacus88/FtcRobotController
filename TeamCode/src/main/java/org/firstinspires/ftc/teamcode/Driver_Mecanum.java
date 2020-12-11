@@ -18,13 +18,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 @SuppressWarnings("WeakerAccess")
-@TeleOp(name = "Mecanum Drive", group = "HardwarePushbot")
+@TeleOp(name = "Backup Drive Mode By Bart", group = "HardwarePushbot")
 //@Disabled
 public class Driver_Mecanum extends LinearOpMode {
-    private HardwareDefenition robot = new HardwareDefenition();
+    private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive         = new Drive();
     private GamepadDrive gamepadDrive = new GamepadDrive();
-    private StoneManipulator stoneManipulator = new StoneManipulator();
+    //private StoneManipulator stoneManipulator = new StoneManipulator();
 
     /* Test the lift */
     //private LinearActuator lift = new LinearActuator();
@@ -46,7 +46,7 @@ public class Driver_Mecanum extends LinearOpMode {
 
     public void runOpMode() {
 
-        HardwareDefenition.STATUS retVal;
+        HardwareDef_20_21.STATUS retVal;
 
 
 
@@ -194,21 +194,21 @@ public class Driver_Mecanum extends LinearOpMode {
                     //select previous stone position
                 }
 
-                if (stoneManipulator.getPlacementStatus() != StoneManipulator.PlacementStatus.AVAILABLE) {
-                    allowTurtle = false;
-                    allowMovement = false;
-                }
-                else if ((gamepad1.dpad_up) || (turtleInitiated)) {
-                    //Engage turtle mode, approach build platform
-                    allowTurtle = true;
-                    allowMovement = false;
-                    turtleInitiated = true;
-                    turtleApproach();
-                }
-                else {
-                    allowTurtle = true;
-                    allowMovement = true;
-                }
+//                if (stoneManipulator.getPlacementStatus() != StoneManipulator.PlacementStatus.AVAILABLE) {
+//                    allowTurtle = false;
+//                    allowMovement = false;
+//                }
+//                else if ((gamepad1.dpad_up) || (turtleInitiated)) {
+//                    //Engage turtle mode, approach build platform
+//                    allowTurtle = true;
+//                    allowMovement = false;
+//                    turtleInitiated = true;
+//                    turtleApproach();
+//                }
+//                else {
+//                    allowTurtle = true;
+//                    allowMovement = true;
+//                }
 
             }
 
@@ -314,10 +314,10 @@ public class Driver_Mecanum extends LinearOpMode {
              ****************************************************/
             if (CurrentTime - LastMotor > MOTORPERIOD) {
                 LastMotor = CurrentTime;
-                robot.leftFront.setPower(-1 * (leftDriveCmd + leftDriveCrab) );
-                robot.rightFront.setPower(-1 * (rightDriveCmd + rightDriveCrab) );
-                robot.leftRear.setPower(-1 * (leftRearCmd + leftRearCrab) );
-                robot.rightRear.setPower(-1 * (rightRearCmd + rightRearCrab) );
+                robot.frontRight.setPower(-1 * (leftDriveCmd + leftDriveCrab) );
+                robot.frontLeft.setPower(-1 * (rightDriveCmd + rightDriveCrab) );
+                robot.backRight.setPower(-1 * (leftRearCmd + leftRearCrab) );
+                robot.backLeft.setPower(-1 * (rightRearCmd + rightRearCrab) );
                 //stoneManipulator.update();
                 //lift.update();
                 //deploy.update();
@@ -349,10 +349,10 @@ public class Driver_Mecanum extends LinearOpMode {
         }
 
         //SAFE EXIT OF RUN OPMODE, stop motors, leave servos????
-        robot.leftFront.setPower(0);
-        robot.rightFront.setPower(0);
-        robot.leftRear.setPower(0);
-        robot.rightRear.setPower(0);
+        robot.frontLeft.setPower(0);
+        robot.frontRight.setPower(0);
+        robot.backRight.setPower(0);
+        robot.backLeft.setPower(0);
 
     }
 
@@ -395,8 +395,8 @@ public class Driver_Mecanum extends LinearOpMode {
     private void turtleApproach() {
         if (!turtleApproachStarted) {
             turtleApproachStarted = true;
-            initialLeftDistance = robot.distanceLeft.getDistance(DistanceUnit.INCH);
-            initialRightDistance = robot.distanceRight.getDistance(DistanceUnit.INCH);
+            //initialLeftDistance = robot.distanceLeft.getDistance(DistanceUnit.INCH);
+            //initialRightDistance = robot.distanceRight.getDistance(DistanceUnit.INCH);
             if (initialLeftDistance < TURTLE_DESIRED_DISTANCE) {
                 turtleLeftPower = -1*TURTLE_MINIMUM_SPEED;
             }
@@ -411,8 +411,8 @@ public class Driver_Mecanum extends LinearOpMode {
             }
         }
         else {
-            currentLeftDistance = robot.distanceLeft.getDistance(DistanceUnit.INCH);
-            currentRightDistance = robot.distanceRight.getDistance(DistanceUnit.INCH);
+            //currentLeftDistance = robot.distanceLeft.getDistance(DistanceUnit.INCH);
+            //currentRightDistance = robot.distanceRight.getDistance(DistanceUnit.INCH);
             if (turtleDistanceTolerance(currentLeftDistance)) {
                 turtleLeftPower = 0.0;
             }

@@ -7,6 +7,7 @@ package org.firstinspires.ftc.teamcode;
  *
  */
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,7 +16,7 @@ import com.qualcomm.robotcore.util.Range;
 
 @SuppressWarnings("WeakerAccess")
 @TeleOp(name = "Robot Drive Encoder Calibration", group = "Calibration")
-
+@Disabled
 public class Robot_Drive_Encoder_Calibration extends LinearOpMode {
     HardwareDefenition robot = new HardwareDefenition();
     private Drive robotDrive = new Drive();
