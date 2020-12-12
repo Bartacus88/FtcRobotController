@@ -142,7 +142,7 @@ public class Driver_20_21 extends LinearOpMode {
                 if (gamepad1.a) {
                     //Set to low bridge transition
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
-                    shooterPower = 1;
+                    shooterPower = .7;
                 }
                 else
                 {
@@ -180,20 +180,22 @@ public class Driver_20_21 extends LinearOpMode {
 
 
                 if (gamepad1.right_bumper) {
-                    rightBumperCnt++;
+                    /*rightBumperCnt++;
                     if(rightBumperCnt > BUMPTHRESHOLD) {
                         intakePower += 0.3334; //Icrement by 33.34%
                         Math.min(1, intakePower);
                         rightBumperCnt = 0;
-                    }
+                    }*/
+                    intakePower = 1;
                 }
                 if (gamepad1.left_bumper) {
-                    leftBumperCnt++;
+                   /* leftBumperCnt++;
                     if(leftBumperCnt > BUMPTHRESHOLD) {
                         intakePower -= 0.3334; //Decrement by 33.34%
                         Math.max(0, intakePower);
                         rightBumperCnt = 0;
-                    }
+                    }*/
+                    intakePower = 0;
                 }
 
 /*                else if ((gamepad1.dpad_up) || (turtleInitiated)) {
@@ -313,6 +315,8 @@ public class Driver_20_21 extends LinearOpMode {
                 robot.frontShooter.setPower(shooterPower);
                 robot.backShooter.setPower(shooterPower);
 
+                robot.transportIntake.setPower(intakePower);
+
 
             }
 
@@ -345,6 +349,10 @@ public class Driver_20_21 extends LinearOpMode {
         robot.frontLeft.setPower(0);
         robot.backRight.setPower(0);
         robot.backLeft.setPower(0);
+        robot.transportIntake.setPower(0);
+        robot.frontShooter.setPower(0);
+        robot.backShooter.setPower(0);
+
 
 
     }

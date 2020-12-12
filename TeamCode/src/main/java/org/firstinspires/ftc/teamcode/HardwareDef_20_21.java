@@ -132,9 +132,9 @@ public class HardwareDef_20_21
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.FORWARD);
         backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontShooter.setDirection(DcMotor.Direction.FORWARD);
-        backShooter.setDirection(DcMotor.Direction.REVERSE);
-        transportIntake.setDirection(DcMotor.Direction.FORWARD);
+        frontShooter.setDirection(DcMotor.Direction.REVERSE);
+        backShooter.setDirection(DcMotor.Direction.FORWARD);
+        transportIntake.setDirection(DcMotor.Direction.REVERSE);
         wobbleGoalMotor.setDirection(DcMotor.Direction.FORWARD);
 
         // Set all motors to zero power
