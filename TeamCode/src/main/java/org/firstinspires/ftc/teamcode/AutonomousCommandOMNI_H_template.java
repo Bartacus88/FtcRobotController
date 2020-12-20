@@ -9,10 +9,12 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 @Autonomous(name="OMNI H Template", group="Pushbot")
+@Disabled
 @SuppressWarnings("WeakerAccess")
 public class AutonomousCommandOMNI_H_template extends LinearOpMode {
 

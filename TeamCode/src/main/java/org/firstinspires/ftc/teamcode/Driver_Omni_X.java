@@ -22,6 +22,7 @@ package org.firstinspires.ftc.teamcode;
  *
  */
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -29,7 +30,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @SuppressWarnings("WeakerAccess")
 @TeleOp(name = "Rosie the Riveter BOT", group = "HardwarePushbot")
-//@Disabled
+@Disabled
 public class Driver_Omni_X extends LinearOpMode {
     private HardwareDefenitionOmni_X robot = new HardwareDefenitionOmni_X();
     private Drive robotDrive         = new Drive();

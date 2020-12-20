@@ -22,6 +22,7 @@ package org.firstinspires.ftc.teamcode;
  *
  */
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -30,7 +31,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @SuppressWarnings("WeakerAccess")
 @TeleOp(name = "Skystone Detect", group = "HardwarePushbot")
-//@Disabled
+@Disabled
 public class Driver_SkystoneDetection extends LinearOpMode {
     private HardwareDefinitionJK2019 robot = new HardwareDefinitionJK2019();
     private Drive robotDrive         = new Drive();

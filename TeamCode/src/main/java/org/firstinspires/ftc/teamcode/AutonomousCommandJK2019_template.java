@@ -9,12 +9,14 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 
 @Autonomous(name="JK Template", group="Pushbot")
 @SuppressWarnings("WeakerAccess")
+@Disabled
 public class AutonomousCommandJK2019_template extends LinearOpMode {
 
     AutonomousStatesJK2019 runMe = new AutonomousStatesJK2019();

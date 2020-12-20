@@ -7,6 +7,7 @@ package org.firstinspires.ftc.teamcode;
  *
  */
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -14,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @SuppressWarnings("WeakerAccess")
 @TeleOp(name = "UltimateGoal", group = "HardwarePushbot")
-//@Disabled
+@Disabled
 public class DriverModeUltimateGoal extends LinearOpMode {
     private HardwareDefenitionUltimateGoal robot = new HardwareDefenitionUltimateGoal();
     private GamepadDrive gamepadDrive = new GamepadDrive();

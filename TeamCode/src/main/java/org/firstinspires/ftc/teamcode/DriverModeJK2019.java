@@ -7,6 +7,7 @@ package org.firstinspires.ftc.teamcode;
  *
  */
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -14,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @SuppressWarnings("WeakerAccess")
 @TeleOp(name = "Tank Drive", group = "HardwarePushbot")
-//@Disabled
+@Disabled
 public class DriverModeJK2019 extends LinearOpMode {
     private HardwareDefinitionJK2019 robot = new HardwareDefinitionJK2019();
     private GamepadDrive gamepadDrive = new GamepadDrive();
@@ -141,8 +142,8 @@ public class DriverModeJK2019 extends LinearOpMode {
                 LastMotor = CurrentTime;
                 // Yes, we'll set the power each time, even if it's zero.
                 // this way we don't accidentally leave it somewhere.  Just simpler this way.
-                robot.leftFront.setPower(leftCmd);
-                robot.rightFront.setPower(rightCmd);
+                //robot.leftFront.setPower(leftCmd);
+                //robot.rightFront.setPower(rightCmd);
 
             }
 
@@ -165,8 +166,8 @@ public class DriverModeJK2019 extends LinearOpMode {
         }
 
         //SAFE EXIT OF RUN OPMODE, stop motors, leave servos????
-        robot.leftFront.setPower(0);
-        robot.rightFront.setPower(0);
+        //robot.leftFront.setPower(0);
+        //robot.rightFront.setPower(0);
     }
 
 
