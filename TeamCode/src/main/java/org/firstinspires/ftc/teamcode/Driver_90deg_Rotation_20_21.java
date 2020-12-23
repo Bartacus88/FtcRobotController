@@ -230,8 +230,8 @@ public class Driver_90deg_Rotation_20_21 extends LinearOpMode {
                 rightRearCrab = 0;
 
                 //Test code for gamepad angle and magnitude
-                angle = gamepadDrive.angle(gamepad1.left_stick_x, gamepad1.left_stick_y);
-                magnitude = gamepadDrive.magnitude(gamepad1.left_stick_x, gamepad1.left_stick_y);
+                angle = gamepadDrive.angle(gamepad1.right_stick_y, gamepad1.right_stick_x);
+                magnitude = gamepadDrive.magnitude(gamepad1.right_stick_y, gamepad1.right_stick_x);
 
 
                 /**********************************************************************************
