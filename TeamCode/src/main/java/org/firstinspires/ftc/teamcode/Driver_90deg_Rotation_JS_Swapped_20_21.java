@@ -93,6 +93,9 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
         double shooterPower = 0;
 
         double intakePower = 0;
+
+        boolean loaderIsAsserted = false;
+
         int leftBumperCnt = 0;
         int rightBumperCnt = 0;
         final int BUMPTHRESHOLD = 5;
@@ -135,15 +138,25 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
             if (CurrentTime - LastController > CONTROLLERPERIOD) {
                 LastController = CurrentTime;
 
-                if (gamepad1.a) {
+                if (gamepad1.a && loaderIsAsserted) {
                     //Set to low bridge transition
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
-                    shooterPower = .7;
+                    shooterPower = intakePower;
                 }
                 else
                 {
                     shooterPower = 0;
                 }
+                if (gamepad1.left_trigger > 0.05)
+                {
+                    intakePower = gamepad1.left_trigger;
+                    loaderIsAsserted = true;
+                }
+                else
+                {
+                    loaderIsAsserted = false;
+                }
+
                 if (gamepad1.b) {
                     //Set to high bridge transition
                     //lift.move(0.2, LinearActuator.MOVETYPE.AUTOMATIC);
@@ -157,9 +170,23 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     //lift.move(1.0, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
 
-                if (gamepad2.a) {
-                    //Set to low bride transition
-                    //deploy.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
+                if (gamepad2.a && loaderIsAsserted) {
+                    //Set to low bridge transition
+                    //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
+                    shooterPower = intakePower;
+                }
+                else
+                {
+                    shooterPower = 0;
+                }
+                if (gamepad2.left_trigger > 0.05)
+                {
+                    intakePower = gamepad2.left_trigger;
+                    loaderIsAsserted = true;
+                }
+                else
+                {
+                    loaderIsAsserted = false;
                 }
                 if (gamepad2.b) {
                     //Set to high bridge transition
@@ -173,7 +200,6 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     //Initiate placement of capstone
                     //position.move(1.0, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
-
 
                 if (gamepad1.right_bumper) {
                     /*rightBumperCnt++;
@@ -193,6 +219,8 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     }*/
                     intakePower = 0;
                 }
+
+
 
 /*                else if ((gamepad1.dpad_up) || (turtleInitiated)) {
                     //Engage turtle mode, approach build platform
