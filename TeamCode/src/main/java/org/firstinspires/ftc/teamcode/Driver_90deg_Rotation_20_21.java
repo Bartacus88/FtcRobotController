@@ -250,7 +250,7 @@ public class Driver_90deg_Rotation_20_21 extends LinearOpMode {
                 //FORWARD/REVERSE
                 if (Math.abs(gamepad1.left_stick_x) > g1_Y_Threshold) {
                     //Move forwards or backwards
-                    leftDriveCmd = gamepadDrive.condition(gamepad1.left_stick_y, GamepadDrive.CONDITION_TYPE.POWER7);
+                    leftDriveCmd = gamepadDrive.condition(gamepad1.left_stick_x, GamepadDrive.CONDITION_TYPE.POWER7);
                     rightDriveCmd = leftDriveCmd;
                     leftRearCmd = leftDriveCmd;
                     rightRearCmd = leftDriveCmd;
