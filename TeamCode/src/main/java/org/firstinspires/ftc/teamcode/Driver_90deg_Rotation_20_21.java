@@ -257,7 +257,7 @@ public class Driver_90deg_Rotation_20_21 extends LinearOpMode {
                 }
 
                 //PIVOT
-                if (Math.abs(gamepad1.left_stick_x) > g1_X_Threshold) {
+                if (Math.abs(gamepad1.left_stick_y) > g1_X_Threshold) {
                     //Pivot
                     leftDriveCmd = -1 * gamepadDrive.condition(gamepad1.left_stick_y, GamepadDrive.CONDITION_TYPE.POWER7);
                     rightDriveCmd = -1 * leftDriveCmd;
