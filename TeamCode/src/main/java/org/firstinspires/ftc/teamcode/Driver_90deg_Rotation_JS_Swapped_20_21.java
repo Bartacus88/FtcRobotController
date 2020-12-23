@@ -138,7 +138,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
             if (CurrentTime - LastController > CONTROLLERPERIOD) {
                 LastController = CurrentTime;
 
-                if (gamepad1.a && loaderIsAsserted) {
+                if (gamepad1.a) {
                     //Set to low bridge transition
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
                     shooterPower = intakePower;
@@ -147,9 +147,9 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 {
                     shooterPower = 0;
                 }
-                if (gamepad1.left_trigger > 0.05)
+                if (gamepad1.left_trigger > 0.05 || loaderIsAsserted)
                 {
-                    intakePower = gamepad1.left_trigger;
+                    intakePower = Math.max(gamepad1.left_trigger,gamepad2.left_trigger);
                     loaderIsAsserted = true;
                 }
                 else
@@ -170,7 +170,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     //lift.move(1.0, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
 
-                if (gamepad2.a && loaderIsAsserted) {
+                if (gamepad2.a) {
                     //Set to low bridge transition
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
                     shooterPower = intakePower;
@@ -179,9 +179,9 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 {
                     shooterPower = 0;
                 }
-                if (gamepad2.left_trigger > 0.05)
+                if (gamepad2.left_trigger > 0.05 || loaderIsAsserted)
                 {
-                    intakePower = gamepad2.left_trigger;
+                    intakePower = Math.max(gamepad1.left_trigger,gamepad2.left_trigger);
                     loaderIsAsserted = true;
                 }
                 else
