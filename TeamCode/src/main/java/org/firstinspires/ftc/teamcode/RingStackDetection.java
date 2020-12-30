@@ -55,12 +55,18 @@ import java.util.List;
  */
 //@Disabled
 public class RingStackDetection {
-    public  enum LOCATION {FIRST, SECOND, THIRD, FOURTH, FIFTH, SIXTH, ERROR};
     private LinearOpMode myOpMode = null;
     private boolean timeLeft = false;
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
+
+    public enum Rings
+    {
+        NONE, //0
+        ONE,     //1
+        FOUR,    //2
+    }
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -77,11 +83,11 @@ public class RingStackDetection {
     public static final String VUFORIA_KEY = "Afsw2oP/////AAABmfzepGuVnkr3uHCSQlCl89hgf8A+n9yEsMhH8pfA7Ttz/JfeOCGHzGmHjZMt0IHzaR5tUbVK4L59qd0RJsjAfrmrCsu/CDMm90dy3T9+eRo+zlw6aGRHD0j3EhngUWY0dc1PrRZpWXa+KCLOy3rtB+aWaZDBxILq6uCiqRtLGUwBTrDGQVH/fE1z32YZbDISS5F6actiiu9RhSyU8DKn1EEWeuTj0W+O7lAoDUIhJfJ0B0Iqk73Gfuv2ytbUq89obq9ZVMUqjq9rFsYiztVPOXQkWZsnv8P+eN/0XEgDUmQCU4XBABUw7bTsn9WW/xMDyqnuUMy+AbD/ag5+EPpQaAEGa9nT6n/ATK/Znu47ZlAe";
     private  VuforiaLocalizer vuforia;
     private  TFObjectDetector tfod;
+    public Rings retVal = Rings.NONE;
 
 
-    public LOCATION detectRingStack(long timelimit) {
+    public Rings detectRingStack(long timelimit) {
         long quitTime;
-        LOCATION retVal = LOCATION.ERROR;
 
         // Verify that configure has been called first.
         if (myOpMode == null) {
@@ -110,13 +116,24 @@ public class RingStackDetection {
                       if (updatedRecognitions.size() > 0) {
                         for (Recognition recognition : updatedRecognitions) {
                           myOpMode.telemetry.addData("OBJECT: ", recognition.getLabel());
+                          if(recognition.getLabel() == "Quad")
+                          {
+                              retVal = Rings.FOUR;
+                          }
+                          else if (recognition.getLabel() == "Single")
+                          {
+                              retVal = Rings.ONE;
+                          }
+                          else
+                          {
+                              retVal = Rings.NONE;
+                          }
                           myOpMode.telemetry.addData("LEFT START: ", recognition.getLeft());
+                          myOpMode.telemetry.addData("RetVal: ", retVal);
+                          myOpMode.telemetry.update();
                         }
-
-
                       }
-                      myOpMode.telemetry.update();
-                      myOpMode.sleep(200);
+                      //myOpMode.sleep(200); //Not sure that this was ever needed.
                     }
                 }
                 if (System.currentTimeMillis() > quitTime) {
@@ -128,7 +145,6 @@ public class RingStackDetection {
         if (tfod != null) {
             tfod.shutdown();
         }
-
         return (retVal);
     }
 

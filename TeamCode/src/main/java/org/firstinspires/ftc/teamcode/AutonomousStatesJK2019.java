@@ -83,6 +83,7 @@ public class AutonomousStatesJK2019 {
     //Define Robot Hardware and classes here
     private HardwareDefinitionJK2019 robot    = new HardwareDefinitionJK2019();
     private Drive robotDrive                  = new Drive();
+    private RingStackDetection RingStackDetection = new RingStackDetection();
 
     //Define all of the available states for AutoState.   Add new states before PAUSE
     public enum AutoStates {MOVE, PAUSE, WAIT;}
@@ -98,7 +99,9 @@ public class AutonomousStatesJK2019 {
     int CurrentAutoState                = 0;
     static final int   THIRTY_SECONDS   = 30 * 1000;
 
-
+    //Needed to check "starter rings"
+    RingStackDetection.Rings numRings   = org.firstinspires.ftc.teamcode.RingStackDetection.Rings.NONE;
+    boolean ringschecked                = false;
 
     public void runOpMode(LinearOpMode opMode, HardwareMap hardwareMap, AutoCommand cmd[]) {
 
@@ -185,6 +188,9 @@ public class AutonomousStatesJK2019 {
         long LastMotor      = CurrentTime + 20;
         long LastTelemetry  = CurrentTime + 17;
         ElapsedTime runtime = new ElapsedTime();
+
+        RingStackDetection.configureDetection(opMode);
+
         opMode.waitForStart();
         runtime.reset();
 
@@ -195,6 +201,15 @@ public class AutonomousStatesJK2019 {
         while (opMode.opModeIsActive()) {
             CurrentTime = System.currentTimeMillis();
 
+            if (ringschecked == false) //We need to run this only once at the beginning
+            {
+                numRings = RingStackDetection.detectRingStack(1000);
+                opMode.telemetry.clear(); //Do I need this?
+                opMode.telemetry.addData("Ring Num ", numRings);
+                opMode.telemetry.update(); //Do I need this?
+                //SystemClock.sleep(5000); //Dont think that I need this.
+                ringschecked = true;
+            }
 
             /* *******************************************************************
              *                SENSORS
@@ -230,7 +245,6 @@ public class AutonomousStatesJK2019 {
                             stage_complete = true;
                         }
                         break;
-                    // Same call, have two to make autonomous code easier to read
                     case PAUSE:
                     case WAIT:
                     default:
