@@ -32,7 +32,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "Ring Stack Detect", group = "HardwarePushbot")
 //@Disabled
 public class Driver_RingStackDetection extends LinearOpMode {
-    private HardwareDef_Bart_20_21 robot = new HardwareDef_Bart_20_21();
+    private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive         = new Drive();
     private GamepadDrive gamepadDrive = new GamepadDrive();
     private RingStackDetection RingStackDetection = new RingStackDetection();
@@ -57,7 +57,7 @@ public class Driver_RingStackDetection extends LinearOpMode {
 
     public void runOpMode() {
 
-        HardwareDef_Bart_20_21.STATUS retVal;
+        HardwareDef_20_21.STATUS retVal;
 
 
 
