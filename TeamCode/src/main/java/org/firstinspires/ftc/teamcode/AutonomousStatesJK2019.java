@@ -83,7 +83,7 @@ public class AutonomousStatesJK2019 {
     //Define Robot Hardware and classes here
     private HardwareDefinitionJK2019 robot    = new HardwareDefinitionJK2019();
     private Drive robotDrive                  = new Drive();
-    private RingStackDetection RingStackDetection = new RingStackDetection();
+    private RingStackDetection2 RingStackDetection2 = new RingStackDetection2();
 
     //Define all of the available states for AutoState.   Add new states before PAUSE
     public enum AutoStates {MOVE, PAUSE, WAIT;}
@@ -100,10 +100,11 @@ public class AutonomousStatesJK2019 {
     static final int   THIRTY_SECONDS   = 30 * 1000;
 
     //Needed to check "starter rings"
-    RingStackDetection.Rings numRings   = org.firstinspires.ftc.teamcode.RingStackDetection.Rings.NONE;
+    RingStackDetection2.Rings2 numRingsTest;
     boolean ringschecked                = false;
+    int ringArray                       = 0;
 
-    public void runOpMode(LinearOpMode opMode, HardwareMap hardwareMap, AutoCommand cmd[]) {
+    public void runOpMode(LinearOpMode opMode, HardwareMap hardwareMap, AutoCommand cmd_FOUR[],AutoCommand cmd_ONE[],AutoCommand cmd_NONE[]) {
 
         HardwareDefinitionJK2019.STATUS retVal;
         /*
@@ -165,8 +166,30 @@ public class AutonomousStatesJK2019 {
          * the autonomous time limit will be exceeded
          */
         int    i =0,t = 0;
-        while (i < cmd.length) {
-            t += cmd[i].timeLimit;
+        while (i < cmd_NONE.length) {
+            t += cmd_NONE[i].timeLimit;
+            i++;
+        }
+        if (t>THIRTY_SECONDS) {
+            opMode.telemetry.addLine("WARNING... Autonomous Commands may exceed time");
+            opMode.telemetry.addData("   Allowed", THIRTY_SECONDS);
+            opMode.telemetry.addData("   Actual ", t);
+        }
+        opMode.telemetry.update();
+        opMode.telemetry.setAutoClear(true);
+        while (i < cmd_ONE.length) {
+            t += cmd_ONE[i].timeLimit;
+            i++;
+        }
+        if (t>THIRTY_SECONDS) {
+            opMode.telemetry.addLine("WARNING... Autonomous Commands may exceed time");
+            opMode.telemetry.addData("   Allowed", THIRTY_SECONDS);
+            opMode.telemetry.addData("   Actual ", t);
+        }
+        opMode.telemetry.update();
+        opMode.telemetry.setAutoClear(true);
+        while (i < cmd_FOUR.length) {
+            t += cmd_FOUR[i].timeLimit;
             i++;
         }
         if (t>THIRTY_SECONDS) {
@@ -189,7 +212,7 @@ public class AutonomousStatesJK2019 {
         long LastTelemetry  = CurrentTime + 17;
         ElapsedTime runtime = new ElapsedTime();
 
-        RingStackDetection.configureDetection(opMode);
+        RingStackDetection2.configureDetection(opMode);
 
         opMode.waitForStart();
         runtime.reset();
@@ -200,16 +223,8 @@ public class AutonomousStatesJK2019 {
         // run until the end of the match (driver presses STOP)
         while (opMode.opModeIsActive()) {
             CurrentTime = System.currentTimeMillis();
-
-            if (ringschecked == false) //We need to run this only once at the beginning
-            {
-                numRings = RingStackDetection.detectRingStack(1000);
-                opMode.telemetry.clear(); //Do I need this?
-                opMode.telemetry.addData("Ring Num ", numRings);
-                opMode.telemetry.update(); //Do I need this?
-                //SystemClock.sleep(5000); //Dont think that I need this.
-                ringschecked = true;
-            }
+            RingStackDetection2.detectRingStack(1000);
+                numRingsTest = RingStackDetection2.retRings;
 
             /* *******************************************************************
              *                SENSORS
@@ -235,32 +250,89 @@ public class AutonomousStatesJK2019 {
                 boolean stage_complete = false;
                 stageTime += NAVPERIOD;
 
-                switch (cmd[CurrentAutoState].state) {
-                    case MOVE:
-                        if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
-                            robotDrive.move(cmd[CurrentAutoState].moveType, (int)cmd[CurrentAutoState].value1,cmd[CurrentAutoState].value2);
-                        }
-                        if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.FOUR)
+                    switch (cmd_NONE[CurrentAutoState].state) {
+                        case MOVE:
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                                robotDrive.move(cmd_FOUR[CurrentAutoState].moveType, (int) cmd_FOUR[CurrentAutoState].value1, cmd_FOUR[CurrentAutoState].value2);
+                            }
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                                stage_complete = true;
+                            }
+                            break;
+                        case PAUSE:
+                        case WAIT:
+                        default:
                             robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                            stage_complete = true;
-                        }
-                        break;
-                    case PAUSE:
-                    case WAIT:
-                    default:
-                        robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                        break;
+                            break;
+                    }
+                else if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.ONE) {
+                    switch (cmd_NONE[CurrentAutoState].state) {
+                        case MOVE:
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                                robotDrive.move(cmd_ONE[CurrentAutoState].moveType, (int) cmd_ONE[CurrentAutoState].value1, cmd_ONE[CurrentAutoState].value2);
+                            }
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                                stage_complete = true;
+                            }
+                            break;
+                        case PAUSE:
+                        case WAIT:
+                        default:
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            break;
+                    }
+                } else {
+                    switch (cmd_NONE[CurrentAutoState].state) {
+                        case MOVE:
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                                robotDrive.move(cmd_ONE[CurrentAutoState].moveType, (int) cmd_ONE[CurrentAutoState].value1, cmd_ONE[CurrentAutoState].value2);
+                            }
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                                stage_complete = true;
+                            }
+                            break;
+                        case PAUSE:
+                        case WAIT:
+                        default:
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            break;
+                    }
                 }
 
                 /*
                  * Check to see if there is another state to run, Reset stage time, possibly
                  * update/clear local parameters if required (robot specific)
                  */
-                if ((stageTime >= cmd[CurrentAutoState].timeLimit) || (stage_complete)){
-                    stageTime = 0;
-                    //paddlePower = 0;  //CR Servo
-                    if (CurrentAutoState  < (cmd.length - 1)) {
-                        CurrentAutoState ++;
+                if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.FOUR) {
+                    if ((stageTime >= cmd_FOUR[CurrentAutoState].timeLimit) || (stage_complete)) {
+                        stageTime = 0;
+                        //paddlePower = 0;  //CR Servo
+                        if (CurrentAutoState < (cmd_FOUR.length - 1)) {
+                            CurrentAutoState++;
+                        }
+                    }
+                }
+                else if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.ONE) {
+                    if ((stageTime >= cmd_ONE[CurrentAutoState].timeLimit) || (stage_complete)) {
+                        stageTime = 0;
+                        //paddlePower = 0;  //CR Servo
+                        if (CurrentAutoState < (cmd_ONE.length - 1)) {
+                            CurrentAutoState++;
+                        }
+                    }
+                }
+                else
+                {
+                    if ((stageTime >= cmd_NONE[CurrentAutoState].timeLimit) || (stage_complete)) {
+                        stageTime = 0;
+                        //paddlePower = 0;  //CR Servo
+                        if (CurrentAutoState < (cmd_NONE.length - 1)) {
+                            CurrentAutoState++;
+                        }
                     }
                 }
             }
@@ -295,17 +367,43 @@ public class AutonomousStatesJK2019 {
              ****************************************************/
             if (CurrentTime - LastTelemetry > TELEMETRYPERIOD) {
                 LastTelemetry = CurrentTime;
-                opMode.telemetry.addData("Current index: ", CurrentAutoState);
-                opMode.telemetry.addData("Current State: ", cmd[CurrentAutoState].state);
-                opMode.telemetry.addData("Time Limit   : ", cmd[CurrentAutoState].timeLimit);
-                opMode.telemetry.addData("Value 1      : ", cmd[CurrentAutoState].value1);
-                opMode.telemetry.addData("Value 2      : ", cmd[CurrentAutoState].value2);
-                opMode.telemetry.addData("Value 3      : ", cmd[CurrentAutoState].value3);
-                opMode.telemetry.addData("Value 4      : ", cmd[CurrentAutoState].value4);
-                opMode.telemetry.update();
+                if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.FOUR) {
+                    opMode.telemetry.addData("Num Rings Test ", RingStackDetection2.retRings);
+                    opMode.telemetry.addData("Current index: ", CurrentAutoState);
+                    opMode.telemetry.addData("Current State: ", cmd_FOUR[CurrentAutoState].state);
+                    opMode.telemetry.addData("Time Limit   : ", cmd_FOUR[CurrentAutoState].timeLimit);
+                    opMode.telemetry.addData("Value 1      : ", cmd_FOUR[CurrentAutoState].value1);
+                    opMode.telemetry.addData("Value 2      : ", cmd_FOUR[CurrentAutoState].value2);
+                    opMode.telemetry.addData("Value 3      : ", cmd_FOUR[CurrentAutoState].value3);
+                    opMode.telemetry.addData("Value 4      : ", cmd_FOUR[CurrentAutoState].value4);
+                    opMode.telemetry.update();
+                }
+                else if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.ONE) {
+                    opMode.telemetry.addData("Num Rings Test ", RingStackDetection2.retRings);
+                    opMode.telemetry.addData("Current index: ", CurrentAutoState);
+                    opMode.telemetry.addData("Current State: ", cmd_ONE[CurrentAutoState].state);
+                    opMode.telemetry.addData("Time Limit   : ", cmd_ONE[CurrentAutoState].timeLimit);
+                    opMode.telemetry.addData("Value 1      : ", cmd_ONE[CurrentAutoState].value1);
+                    opMode.telemetry.addData("Value 2      : ", cmd_ONE[CurrentAutoState].value2);
+                    opMode.telemetry.addData("Value 3      : ", cmd_ONE[CurrentAutoState].value3);
+                    opMode.telemetry.addData("Value 4      : ", cmd_ONE[CurrentAutoState].value4);
+                    opMode.telemetry.update();
+                }
+                else
+                {
+                    opMode.telemetry.addData("Num Rings Test ", RingStackDetection2.retRings);
+                    opMode.telemetry.addData("Current index: ", CurrentAutoState);
+                    opMode.telemetry.addData("Current State: ", cmd_NONE[CurrentAutoState].state);
+                    opMode.telemetry.addData("Time Limit   : ", cmd_NONE[CurrentAutoState].timeLimit);
+                    opMode.telemetry.addData("Value 1      : ", cmd_NONE[CurrentAutoState].value1);
+                    opMode.telemetry.addData("Value 2      : ", cmd_NONE[CurrentAutoState].value2);
+                    opMode.telemetry.addData("Value 3      : ", cmd_NONE[CurrentAutoState].value3);
+                    opMode.telemetry.addData("Value 4      : ", cmd_NONE[CurrentAutoState].value4);
+                    opMode.telemetry.update();
+                }
             }
         } // end of while opmode is active
-
+        opMode.telemetry.addData("Num Rings Test ", RingStackDetection2.retRings);
         opMode.telemetry.addData("Path", "Complete");
         opMode.telemetry.update();
     }

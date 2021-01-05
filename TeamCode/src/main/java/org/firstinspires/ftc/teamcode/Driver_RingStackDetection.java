@@ -35,7 +35,7 @@ public class Driver_RingStackDetection extends LinearOpMode {
     private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive         = new Drive();
     private GamepadDrive gamepadDrive = new GamepadDrive();
-    private RingStackDetection RingStackDetection = new RingStackDetection();
+    private RingStackDetection2 RingStackDetection2 = new RingStackDetection2();
 
 
 
@@ -75,6 +75,7 @@ public class Driver_RingStackDetection extends LinearOpMode {
         gamepadDrive.setZeroAxis(GamepadDrive.AXES.X_POS);
         telemetry.addData("      ", retVal);
         telemetry.update();
+        RingStackDetection2.Rings2 numRingsTest = org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.NONE;
 
 
 
@@ -96,7 +97,7 @@ public class Driver_RingStackDetection extends LinearOpMode {
 
 
 
-        RingStackDetection.configureDetection(this);
+        RingStackDetection2.configureDetection(this);
 
         waitForStart();
         runtime.reset();
@@ -144,7 +145,7 @@ public class Driver_RingStackDetection extends LinearOpMode {
 
             if (CurrentTime - LastNav > NAVPERIOD) {
                 LastNav = CurrentTime;
-                RingStackDetection.detectRingStack(1000000);
+                RingStackDetection2.detectRingStack(100000);
 
                 if (gamepad1.x) {
                     extensionCmd += 0.01;
@@ -195,6 +196,7 @@ public class Driver_RingStackDetection extends LinearOpMode {
                 LastTelemetry = CurrentTime;
                 telemetry.clear();
                 telemetry.addData("Extension Cmd ", extensionCmd);
+                telemetry.addData("NumRingsTest",RingStackDetection2.retRings);
                 telemetry.update();
             }
         }

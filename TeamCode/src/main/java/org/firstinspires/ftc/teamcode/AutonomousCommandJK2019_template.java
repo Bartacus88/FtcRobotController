@@ -32,7 +32,7 @@ public class AutonomousCommandJK2019_template extends LinearOpMode {
     };
 
     public void runOpMode() {
-        runMe.runOpMode(this, hardwareMap, cmd);
+        runMe.runOpMode(this, hardwareMap, cmd, cmd, cmd);
     }
 
 }
