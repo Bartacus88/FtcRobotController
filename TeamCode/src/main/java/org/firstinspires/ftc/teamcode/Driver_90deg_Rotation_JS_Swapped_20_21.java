@@ -138,7 +138,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
             if (CurrentTime - LastController > CONTROLLERPERIOD) {
                 LastController = CurrentTime;
 
-                if (gamepad1.a) {
+                if (gamepad1.a || gamepad2.b) {
                     //Set to low bridge transition
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
                     shooterPower = intakePower;
@@ -166,8 +166,8 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     //Initiate placement of capstone
                     //lift.move(1.0, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
-
-                if (gamepad2.a) {
+                //This is repetitive Its here merely to show that Both Controllers could launch.
+                if (gamepad2.a || gamepad1.a) {
                     //Set to low bridge transition
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
                     shooterPower = intakePower;
