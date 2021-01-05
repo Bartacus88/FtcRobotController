@@ -147,14 +147,11 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 {
                     shooterPower = 0;
                 }
-                if (gamepad1.left_trigger > 0.05 || loaderIsAsserted)
-                {
-                    intakePower = Math.max(gamepad1.left_trigger,gamepad2.left_trigger);
-                    loaderIsAsserted = true;
-                }
-                else
-                {
-                    loaderIsAsserted = false;
+
+                if (gamepad1.right_trigger > 0.05 || gamepad2.right_trigger > 0.05) {
+                    intakePower = Math.max(gamepad1.right_trigger, gamepad2.left_trigger);
+                } else {
+                    intakePower = 0;
                 }
 
                 if (gamepad1.b) {
@@ -179,14 +176,11 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 {
                     shooterPower = 0;
                 }
-                if (gamepad2.left_trigger > 0.05 || loaderIsAsserted)
-                {
-                    intakePower = Math.max(gamepad1.left_trigger,gamepad2.left_trigger);
-                    loaderIsAsserted = true;
-                }
-                else
-                {
-                    loaderIsAsserted = false;
+                //This is repetitive Its here merely to show that Both Controllers could launch.  This will probably need to be removed.
+                if (gamepad2.right_trigger > 0.05 || gamepad1.right_trigger > 0.05) {
+                    intakePower = Math.max(gamepad2.left_trigger, gamepad1.right_trigger);
+                } else {
+                    intakePower = 0;
                 }
                 if (gamepad2.b) {
                     //Set to high bridge transition
