@@ -75,7 +75,7 @@ public class PushbotAutoDriveByEncoder_Linear extends LinearOpMode {
 
     static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
     static final int     COUNTS_PER_90_DEG   = 1440/4;
-    static final double     DRIVE_SPEED             = 0.3;
+    static final double     DRIVE_SPEED             = 0.23;
 
     @Override
     public void runOpMode() {
@@ -149,6 +149,7 @@ public class PushbotAutoDriveByEncoder_Linear extends LinearOpMode {
             runtime.reset();
             //robot.leftDrive.setPower(Math.abs(speed));
             robot.wobbleGoalMotor.setPower(Math.abs(speed));
+            sleep(25000);   // optional pause after each move
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
