@@ -111,8 +111,9 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
 
         ElapsedTime runtime = new ElapsedTime();
 
+        robot.wobbleGoalMotor.setTargetPosition(0); //Must state that our initial position is refered to as "0" or the "datum"
         lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1,
-                                1440, 1, this, true);
+                1440, 1, this, true);
 
 
         waitForStart();
@@ -161,8 +162,8 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 }
 
                 if (gamepad1.b) {
-                    //Set to high bridge transition
-                    //lift.move(0.2, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //Move position is in percentage.  Therefore dont give it 40 for 40 deg.  Give it 40/360 = 1/9 = 0.111111111111
+                    lineAct.move(0.111111111111, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.x) {
                     //Initiate placement of stone
@@ -189,9 +190,8 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     intakePower = 0;
                 }*/
                 if (gamepad2.b) {
-                    //Set to high bridge transition
-                    //deploy.move(1.0, LinearActuator.MOVETYPE.AUTOMATIC);
-                    lineAct.move(40, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //Move position is in percentage.  Therefore dont give it 40 for 40 deg.  Give it 40/360 = 1/9 = 0.111111111111
+                    lineAct.move(0.111111111111, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad2.x) {
                     //Initiate placement of stone
@@ -342,6 +342,8 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
 
                 robot.transportIntake.setPower(intakePower);
 
+                robot.wobbleGoalMotor.setPower(0.2);
+
 
             }
 
@@ -377,6 +379,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
         robot.transportIntake.setPower(0);
         robot.frontShooter.setPower(0);
         robot.backShooter.setPower(0);
+        robot.wobbleGoalMotor.setPower(0);
 
 
 
