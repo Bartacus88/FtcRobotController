@@ -21,6 +21,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
     private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive = new Drive();
     private GamepadDrive gamepadDrive = new GamepadDrive();
+    LinearActuator lineAct = new LinearActuator();
 
     //Defenitions for rate at which each driver task executes.   Time is in milliseconds
     final long SENSORPERIOD = 20;
@@ -109,10 +110,9 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
         telemetry.update();
 
         ElapsedTime runtime = new ElapsedTime();
-        LinearActuator lineAct = new LinearActuator();
 
         lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1,
-                                1440, 1, this, false);
+                                1440, 1, this, true);
 
 
         waitForStart();
