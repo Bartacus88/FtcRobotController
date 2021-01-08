@@ -8,7 +8,9 @@ package org.firstinspires.ftc.teamcode;
  */
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import org.firstinspires.ftc.teamcode.LinearActuator;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -107,6 +109,10 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
         telemetry.update();
 
         ElapsedTime runtime = new ElapsedTime();
+        LinearActuator lineAct = new LinearActuator();
+
+        lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1,
+                                1440, 1, this, false);
 
 
         waitForStart();
@@ -138,7 +144,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
             if (CurrentTime - LastController > CONTROLLERPERIOD) {
                 LastController = CurrentTime;
 
-                if (gamepad1.a || gamepad2.b) {
+                if (gamepad1.a || gamepad2.a) {
                     //Set to low bridge transition
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
                     shooterPower = intakePower;
@@ -167,7 +173,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     //lift.move(1.0, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 //This is repetitive Its here merely to show that Both Controllers could launch.
-                if (gamepad2.a || gamepad1.a) {
+                /*if (gamepad2.a || gamepad1.a) {
                     //Set to low bridge transition
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
                     shooterPower = intakePower;
@@ -181,10 +187,11 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     intakePower = Math.max(gamepad2.left_trigger, gamepad1.right_trigger);
                 } else {
                     intakePower = 0;
-                }
+                }*/
                 if (gamepad2.b) {
                     //Set to high bridge transition
                     //deploy.move(1.0, LinearActuator.MOVETYPE.AUTOMATIC);
+                    lineAct.move(40, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad2.x) {
                     //Initiate placement of stone
