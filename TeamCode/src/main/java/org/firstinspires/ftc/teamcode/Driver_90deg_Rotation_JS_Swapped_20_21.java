@@ -156,30 +156,30 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 }
 
                 if (gamepad1.right_trigger > 0.05 || gamepad2.right_trigger > 0.05) {
-                    intakePower = Math.max(gamepad1.right_trigger, gamepad2.left_trigger);
+                    intakePower = Math.max(gamepad1.right_trigger, gamepad2.right_trigger);
                 } else {
                     intakePower = 0;
                 }
 
                 if (gamepad1.b) {
-                    //Move position is in percentage.  Therefore dont give it 40 for 40 deg.  Give it 40/360 = 1/9 = 0.11111111
-                    lineAct.move(0.11111111, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //Move position is in percentage.  Therefore dont give it 50 for 50 deg.  Give it 50/360 = 0.138
+                    lineAct.move(0.138, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.x) {
-                    //Move position is in percentage.  Therefore dont give it 160 for 160 deg.  Give it 160/360 = 4/9 = 0.44444444
-                    lineAct.move(0.44444444, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //Move position is in percentage.  Therefore dont give it 160 for 160 deg.  Give it 160/360 = 0.444
+                    lineAct.move(0.444, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.y) {
-                    //Move position is in percentage.  Therefore dont give it 150 for 150 deg.  Give it 150/360 = 5/12 = 0.41666666
-                    lineAct.move(0.41666666, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //Move position is in percentage.  Therefore dont give it 150 for 150 deg.  Give it 150/360 =  0.416
+                    lineAct.move(0.416, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.right_bumper) {
-                    //Move position is in percentage.  Therefore dont give it 140 for 140 deg.  Give it 140/360 = 7/18 = 0.38888888
-                    lineAct.move(0.38888888, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //Move position is in percentage.  Therefore dont give it 140 for 140 deg.  Give it 140/360 = 0.388
+                    lineAct.move(0.388, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.left_bumper) {
-                    //Move position is in percentage.  Therefore dont give it 130 for 130 deg.  Give it 130/360 = 13/36 = 0.36111111
-                    lineAct.move(0.36111111, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //Move position is in percentage.  Therefore dont give it 110 for 110 deg.  Give it 110/360 = 0.361
+                    lineAct.move(0.305, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 //This is repetitive Its here merely to show that Both Controllers could launch.
                 /*if (gamepad2.a || gamepad1.a) {
