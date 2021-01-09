@@ -105,6 +105,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
 
         double angle = 0.0;
         double magnitude = 0.0;
+        double wobbleTarget = 0.0;
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -145,7 +146,8 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
             if (CurrentTime - LastController > CONTROLLERPERIOD) {
                 LastController = CurrentTime;
 
-                if (gamepad1.a || gamepad2.a) {
+                //if (gamepad1.a || gamepad2.a) {
+                if (gamepad1.a) {
                     //Set to low bridge transition
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
                     shooterPower = intakePower;
@@ -159,6 +161,16 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     intakePower = Math.max(gamepad1.right_trigger, gamepad2.right_trigger);
                 } else {
                     intakePower = 0;
+                }
+               if (gamepad2.a) {
+                    //Move position is in percentage.  Therefore dont give it 50 for 50 deg.  Give it 50/360 = 0.138
+                     wobbleTarget += 0.125*CONTROLLERPERIOD;
+                     lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
+                }
+                if (gamepad2.b) {
+                        // same as for increment.
+                    wobbleTarget -= 0.125*CONTROLLERPERIOD;
+                    lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
 
                 if (gamepad1.b) {
@@ -197,10 +209,10 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 } else {
                     intakePower = 0;
                 }*/
-                if (gamepad2.b) {
-                    //Move position is in percentage.  Therefore dont give it 40 for 40 deg.  Give it 40/360 = 1/9 = 0.111111111111
-                    lineAct.move(0.111111111111, LinearActuator.MOVETYPE.AUTOMATIC);
-                }
+                //if (gamepad2.b) {
+                  //  //Move position is in percentage.  Therefore dont give it 40 for 40 deg.  Give it 40/360 = 1/9 = 0.111111111111
+                    //lineAct.move(0.111111111111, LinearActuator.MOVETYPE.AUTOMATIC);
+                //}
                 if (gamepad2.x) {
                     //Initiate placement of stone
                     //position.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
