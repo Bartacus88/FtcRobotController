@@ -137,7 +137,7 @@ public class PushbotAutoDriveByEncoder_Linear extends LinearOpMode {
 
             // Determine new target position, and pass to motor controller
             //newLeftTarget = robot.leftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-            newRightTarget = robot.wobbleGoalMotor.getCurrentPosition() + COUNTS_PER_90_DEG;
+            newRightTarget = (int) robot.wobbleGoalMotor.getCurrentPosition() + COUNTS_PER_90_DEG;
             //robot.leftDrive.setTargetPosition(newLeftTarget);
             robot.wobbleGoalMotor.setTargetPosition(newRightTarget);
 
