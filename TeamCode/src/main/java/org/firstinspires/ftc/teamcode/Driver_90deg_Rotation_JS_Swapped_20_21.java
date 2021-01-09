@@ -162,16 +162,24 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 }
 
                 if (gamepad1.b) {
-                    //Move position is in percentage.  Therefore dont give it 40 for 40 deg.  Give it 40/360 = 1/9 = 0.111111111111
-                    lineAct.move(0.111111111111, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //Move position is in percentage.  Therefore dont give it 40 for 40 deg.  Give it 40/360 = 1/9 = 0.11111111
+                    lineAct.move(0.11111111, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.x) {
-                    //Initiate placement of stone
-                    //lift.move(0.5, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //Move position is in percentage.  Therefore dont give it 160 for 160 deg.  Give it 160/360 = 4/9 = 0.44444444
+                    lineAct.move(0.44444444, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.y) {
-                    //Initiate placement of capstone
-                    //lift.move(1.0, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //Move position is in percentage.  Therefore dont give it 150 for 150 deg.  Give it 150/360 = 5/12 = 0.41666666
+                    lineAct.move(0.41666666, LinearActuator.MOVETYPE.AUTOMATIC);
+                }
+                if (gamepad1.right_bumper) {
+                    //Move position is in percentage.  Therefore dont give it 140 for 140 deg.  Give it 140/360 = 7/18 = 0.38888888
+                    lineAct.move(0.38888888, LinearActuator.MOVETYPE.AUTOMATIC);
+                }
+                if (gamepad1.left_bumper) {
+                    //Move position is in percentage.  Therefore dont give it 130 for 130 deg.  Give it 130/360 = 13/36 = 0.36111111
+                    lineAct.move(0.36111111, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 //This is repetitive Its here merely to show that Both Controllers could launch.
                 /*if (gamepad2.a || gamepad1.a) {
@@ -201,25 +209,26 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     //Initiate placement of capstone
                     //position.move(1.0, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
-
+/*
                 if (gamepad1.right_bumper) {
-                    /*rightBumperCnt++;
-                    if(rightBumperCnt > BUMPTHRESHOLD) {
-                        intakePower += 0.3334; //Icrement by 33.34%
-                        Math.min(1, intakePower);
-                        rightBumperCnt = 0;
-                    }*/
+//                    rightBumperCnt++;
+//                    if(rightBumperCnt > BUMPTHRESHOLD) {
+//                        intakePower += 0.3334; //Icrement by 33.34%
+//                        Math.min(1, intakePower);
+//                        rightBumperCnt = 0;
+//                    }
                     intakePower = 1;
                 }
                 if (gamepad1.left_bumper) {
-                   /* leftBumperCnt++;
-                    if(leftBumperCnt > BUMPTHRESHOLD) {
-                        intakePower -= 0.3334; //Decrement by 33.34%
-                        Math.max(0, intakePower);
-                        rightBumperCnt = 0;
-                    }*/
+//                   leftBumperCnt++;
+//                    if(leftBumperCnt > BUMPTHRESHOLD) {
+//                        intakePower -= 0.3334; //Decrement by 33.34%
+//                        Math.max(0, intakePower);
+//                        rightBumperCnt = 0;
+//                    }
                     intakePower = 0;
                 }
+*/
 
 
 
