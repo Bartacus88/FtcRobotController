@@ -146,14 +146,11 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
             if (CurrentTime - LastController > CONTROLLERPERIOD) {
                 LastController = CurrentTime;
 
-                //if (gamepad1.a || gamepad2.a) {
-                if (gamepad1.a) {
                     //Set to low bridge transition
+                if (gamepad1.a || gamepad2.x) {
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
                     shooterPower = intakePower;
-                }
-                else
-                {
+                } else {
                     shooterPower = 0;
                 }
 
@@ -174,84 +171,25 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 }
 
                 if (gamepad1.b) {
-                    //Move position is in percentage.  Therefore dont give it 50 for 50 deg.  Give it 50/360 = 0.138
-                    lineAct.move(0.138, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //Move position is in percentage.  Therefore don't give it 75 for 75 deg.  Give it 75/360 = 0.208
+                    lineAct.move(0.208, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.x) {
-                    //Move position is in percentage.  Therefore dont give it 160 for 160 deg.  Give it 160/360 = 0.444
+                    //Move position is in percentage.  Therefore don't give it 160 for 160 deg.  Give it 160/360 = 0.444
                     lineAct.move(0.444, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.y) {
-                    //Move position is in percentage.  Therefore dont give it 150 for 150 deg.  Give it 150/360 =  0.416
-                    lineAct.move(0.416, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //Move position is in percentage.  Therefore don't give it 85 for 85 deg.  Give it 150/360 =  0.236
+                    lineAct.move(0.236, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.right_bumper) {
-                    //Move position is in percentage.  Therefore dont give it 140 for 140 deg.  Give it 140/360 = 0.388
+                    //Move position is in percentage.  Therefore don't give it 140 for 140 deg.  Give it 140/360 = 0.388
                     lineAct.move(0.388, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.left_bumper) {
-                    //Move position is in percentage.  Therefore dont give it 110 for 110 deg.  Give it 110/360 = 0.361
+                    //Move position is in percentage.  Therefore don't give it 110 for 110 deg.  Give it 110/360 = 0.361
                     lineAct.move(0.305, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
-                //This is repetitive Its here merely to show that Both Controllers could launch.
-                /*if (gamepad2.a || gamepad1.a) {
-                    //Set to low bridge transition
-                    //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
-                    shooterPower = intakePower;
-                }
-                else
-                {
-                    shooterPower = 0;
-                }
-                //This is repetitive Its here merely to show that Both Controllers could launch.  This will probably need to be removed.
-                if (gamepad2.right_trigger > 0.05 || gamepad1.right_trigger > 0.05) {
-                    intakePower = Math.max(gamepad2.left_trigger, gamepad1.right_trigger);
-                } else {
-                    intakePower = 0;
-                }*/
-                //if (gamepad2.b) {
-                  //  //Move position is in percentage.  Therefore dont give it 40 for 40 deg.  Give it 40/360 = 1/9 = 0.111111111111
-                    //lineAct.move(0.111111111111, LinearActuator.MOVETYPE.AUTOMATIC);
-                //}
-                if (gamepad2.x) {
-                    //Initiate placement of stone
-                    //position.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
-                }
-                if (gamepad2.y) {
-                    //Initiate placement of capstone
-                    //position.move(1.0, LinearActuator.MOVETYPE.AUTOMATIC);
-                }
-/*
-                if (gamepad1.right_bumper) {
-//                    rightBumperCnt++;
-//                    if(rightBumperCnt > BUMPTHRESHOLD) {
-//                        intakePower += 0.3334; //Icrement by 33.34%
-//                        Math.min(1, intakePower);
-//                        rightBumperCnt = 0;
-//                    }
-                    intakePower = 1;
-                }
-                if (gamepad1.left_bumper) {
-//                   leftBumperCnt++;
-//                    if(leftBumperCnt > BUMPTHRESHOLD) {
-//                        intakePower -= 0.3334; //Decrement by 33.34%
-//                        Math.max(0, intakePower);
-//                        rightBumperCnt = 0;
-//                    }
-                    intakePower = 0;
-                }
-*/
-
-
-
-/*                else if ((gamepad1.dpad_up) || (turtleInitiated)) {
-                    //Engage turtle mode, approach build platform
-
-                }
-                else {
-
-                }*/
-
             }
 
 
@@ -363,7 +301,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
 
                 robot.transportIntake.setPower(intakePower);
 
-                robot.wobbleGoalMotor.setPower(0.2);
+                robot.wobbleGoalMotor.setPower(0.3);
 
 
             }
