@@ -160,13 +160,16 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     intakePower = 0;
                 }
                if (gamepad2.a) {
-                    //Move position is in percentage.  Therefore dont give it 50 for 50 deg.  Give it 50/360 = 0.138
-                     wobbleTarget += 0.125*CONTROLLERPERIOD;
-                     lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
-                }
+                   //Move position is in percentage. Increase angle by 0.000125% for every cycle the gamepad2.a button is pressed.
+                   // Equation: Incrementor*CONTROLLERPERIOD*PeriodsButtonIsPressed
+                   //If "CONTROLLERPERIOD" is 20 (meaning 20ms) That means 50 periods occur in one second (1000ms/20ms).
+                   //0.000125%/period * 20 * 50periods = 12.5% increase in angle (45deg) after one second.
+                   wobbleTarget += 0.000125 * CONTROLLERPERIOD;
+                   lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
+               }
                 if (gamepad2.b) {
                         // same as for increment.
-                    wobbleTarget -= 0.125*CONTROLLERPERIOD;
+                    wobbleTarget -= 0.000125 * CONTROLLERPERIOD;
                     lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
 
