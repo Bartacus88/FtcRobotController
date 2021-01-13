@@ -97,11 +97,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
 
         double intakePower = 0;
 
-        boolean loaderIsAsserted = false;
-
-        int leftBumperCnt = 0;
-        int rightBumperCnt = 0;
-        final int BUMPTHRESHOLD = 5;
+        double shooterIntakePowerSetting = 0.75;
 
         double angle = 0.0;
         double magnitude = 0.0;
@@ -146,7 +142,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
             if (CurrentTime - LastController > CONTROLLERPERIOD) {
                 LastController = CurrentTime;
 
-                    //Set to low bridge transition
+                //Set to low bridge transition
                 if (gamepad1.a || gamepad2.x) {
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
                     shooterPower = intakePower;
@@ -154,17 +150,23 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     shooterPower = 0;
                 }
 
-                if (gamepad1.right_trigger > 0.05 || gamepad2.right_trigger > 0.05) {
-                    intakePower = Math.max(gamepad1.right_trigger, gamepad2.right_trigger);
+
+                if (gamepad2.left_trigger > 0.05) {
+                    intakePower = (gamepad2.left_trigger * -0.25);
+                    shooterPower = intakePower;
+                } else if (gamepad1.right_trigger > 0.05 || gamepad2.right_trigger > 0.05) {
+                    intakePower = Math.max(gamepad1.right_trigger, gamepad2.right_trigger) * shooterIntakePowerSetting;
                 } else {
                     intakePower = 0;
                 }
-               if (gamepad2.a) {
-                   //Move position is in percentage. Increase angle by 0.000125% for every cycle the gamepad2.a button is pressed.
-                   // Equation: Incrementor*CONTROLLERPERIOD*PeriodsButtonIsPressed
-                   //If "CONTROLLERPERIOD" is 20 (meaning 20ms) That means 50 periods occur in one second (1000ms/20ms).
-                   //0.000125%/period * 20 * 50periods = 12.5% increase in angle (45deg) after one second.
-                   wobbleTarget += 0.000125 * CONTROLLERPERIOD;
+
+
+                if (gamepad2.a) {
+                    //Move position is in percentage. Increase angle by 0.000125% for every cycle the gamepad2.a button is pressed.
+                    // Equation: Incrementor*CONTROLLERPERIOD*PeriodsButtonIsPressed
+                    //If "CONTROLLERPERIOD" is 20 (meaning 20ms) That means 50 periods occur in one second (1000ms/20ms).
+                    //0.000125%/period * 20 * 50periods = 12.5% increase in angle (45deg) after one second.
+                    wobbleTarget += 0.000125 * CONTROLLERPERIOD;
                    lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
                }
                 if (gamepad2.b) {
@@ -193,6 +195,17 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     //Move position is in percentage.  Therefore don't give it 110 for 110 deg.  Give it 110/360 = 0.361
                     lineAct.move(0.305, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
+                if (gamepad2.dpad_up) {
+                    shooterIntakePowerSetting = 0.75;
+                }
+                if (gamepad2.dpad_left) {
+                    shooterIntakePowerSetting = 0.50;
+                }
+                if (gamepad2.dpad_down) {
+                    shooterIntakePowerSetting = 0.25;
+                }
+
+
             }
 
 

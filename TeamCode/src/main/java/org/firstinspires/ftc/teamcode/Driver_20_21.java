@@ -7,6 +7,8 @@ package org.firstinspires.ftc.teamcode;
  *
  */
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -16,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 @SuppressWarnings("WeakerAccess")
-@TeleOp(name = "JK Drive Opmode", group = "HardwarePushbot")
+@TeleOp(name = "JK Drive Opmode (Color Drive Test)", group = "HardwarePushbot")
 //@Disabled
 public class Driver_20_21 extends LinearOpMode {
     private HardwareDef_20_21 robot = new HardwareDef_20_21();
@@ -30,6 +32,14 @@ public class Driver_20_21 extends LinearOpMode {
     final long MOTORPERIOD = 20;
     final long CONTROLLERPERIOD = 20;
     final long TELEMETRYPERIOD = 500;
+
+    public enum Color {
+        NOCOLOR, //0
+        ERROR,   //1
+        BLUE,    //2
+        RED,     //3
+        YELLOW   //4
+    }
 
     public void runOpMode() {
 
@@ -103,6 +113,8 @@ public class Driver_20_21 extends LinearOpMode {
         double angle = 0.0;
         double magnitude = 0.0;
 
+        Color currentColor = Color.ERROR;
+
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -127,6 +139,18 @@ public class Driver_20_21 extends LinearOpMode {
              ****************************************************/
             if (CurrentTime - LastSensor > SENSORPERIOD) {
                 LastSensor = CurrentTime;
+                //https://github.com/judenkirobotics/season2016-17/blob/master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/ColorSensorTest.java
+                float hsvValues[] = {0F, 0F, 0F};
+                android.graphics.Color.RGBToHSV(robot.color1.red() * 8, robot.color1.green() * 8, robot.color1.blue() * 8, hsvValues);
+                currentColor = DetectColor((int) hsvValues[0]);
+
+                if (currentColor == Color.YELLOW) {
+                    robot.frontRight.setPower(0);
+                    robot.frontLeft.setPower(0);
+                    robot.backRight.setPower(0);
+                    robot.backLeft.setPower(0);
+                }
+
             }
 
 
@@ -143,14 +167,11 @@ public class Driver_20_21 extends LinearOpMode {
                     //Set to low bridge transition
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
                     shooterPower = .7;
-                }
-                else
-                {
+                } else {
                     shooterPower = 0;
                 }
                 if (gamepad1.b) {
-                    //Set to high bridge transition
-                    //lift.move(0.2, LinearActuator.MOVETYPE.AUTOMATIC);
+                    currentColor = Color.NOCOLOR;
                 }
                 if (gamepad1.x) {
                     //Initiate placement of stone
@@ -354,10 +375,76 @@ public class Driver_20_21 extends LinearOpMode {
         robot.backShooter.setPower(0);
 
 
+    }
+
+    public static int redCnt = 0;
+    public static int blueCnt = 0;
+    public static int yellowCnt = 0;
+
+    public static Color DetectColor(int hueIn) {
+        final int blueMin = 220; //Blue Starts at 220deg and goes to 240deg.
+        final int blueMax = 240;
+        final int redMin = 350; //Red Starts at 350deg and wraps around to 10deg.
+        final int redMax = 10;
+        final int yellowMin = 45; //Yellow Starts at 45deg and goes to 65deg
+        final int yellowMax = 65;
+
+        Color detectedColor = Color.ERROR;
+
+        redCnt--;
+        yellowCnt--;
+        blueCnt--;
+
+        //ensure blueCnt,redCnt,yellowCnt are always greater than 0
+
+
+        if (hueIn >= blueMin && hueIn <= blueMax) {
+            blueCnt += 2; //Increment twice because we already decremented
+        }
+
+        if (hueIn >= redMin || hueIn <= redMax) //Red is a special value when you consider it with the hue values since it wraps around. So we used "OR" to deterimine instead of &&
+        {
+            redCnt += 2; //Increment twice because we already decremented
+        }
+
+        if (hueIn >= yellowMin && hueIn <= yellowMax) {
+            yellowCnt += 2; //Increment twice because we already decremented
+        }
+
+        //ensure blueCnt,redCnt,yellowCnt are always less than 5
+        //                IN 65535  OUT IS 5
+        //                    IN 6  OUT IS 5
+        //                    IN 4  OUT IS 4
+        //                    IN 3  OUT IS 3
+        //                    IN 2  OUT IS 2
+        //                    IN 1  OUT IS 1
+        //                    IN 0  OUT IS 0
+        blueCnt = Math.min(blueCnt, 5);
+        redCnt = Math.min(redCnt, 5);
+        yellowCnt = Math.min(yellowCnt, 5);
+        blueCnt = Math.max(blueCnt, 0);
+        redCnt = Math.max(redCnt, 0);
+        yellowCnt = Math.max(yellowCnt, 0);
+
+        //blueCnt = 0 redCnt = 0 yellow = 4
+        if (blueCnt >= 3 && redCnt <= 2 && yellowCnt <= 2) {
+            //System.out.print("Blue is your color");
+            detectedColor = Color.BLUE;
+        } else if (redCnt >= 3 && yellowCnt <= 2 && blueCnt <= 2) {
+            //System.out.print("Red is your color");
+            detectedColor = Color.RED;
+        } else if (yellowCnt >= 3 && blueCnt <= 2 && redCnt <= 2) {
+            //System.out.print("Yellow is your color");
+            detectedColor = Color.YELLOW;
+        } else {
+            //System.out.print("No color detected");
+            detectedColor = Color.NOCOLOR;
+        }
+
+        return (detectedColor);
 
     }
 }
-
 
 
 ///*
