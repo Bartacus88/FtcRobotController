@@ -41,6 +41,9 @@ public class Driver_20_21 extends LinearOpMode {
         YELLOW   //4
     }
 
+    float hsvValues[] = {0F, 0F, 0F};
+
+
     public void runOpMode() {
 
         HardwareDef_20_21.STATUS retVal;
@@ -140,7 +143,7 @@ public class Driver_20_21 extends LinearOpMode {
             if (CurrentTime - LastSensor > SENSORPERIOD) {
                 LastSensor = CurrentTime;
                 //https://github.com/judenkirobotics/season2016-17/blob/master/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/ColorSensorTest.java
-                float hsvValues[] = {0F, 0F, 0F};
+
                 android.graphics.Color.RGBToHSV(robot.color1.red() * 8, robot.color1.green() * 8, robot.color1.blue() * 8, hsvValues);
                 currentColor = DetectColor((int) hsvValues[0]);
 
@@ -149,6 +152,7 @@ public class Driver_20_21 extends LinearOpMode {
                     robot.frontLeft.setPower(0);
                     robot.backRight.setPower(0);
                     robot.backLeft.setPower(0);
+                    sleep(3000); //freeze the motors for 30 seconds when we hit the line.
                 }
 
             }
@@ -357,6 +361,7 @@ public class Driver_20_21 extends LinearOpMode {
                 //telemetry.addData("Deploy Target Position ", deploy.getTargetPosition());
                 //telemetry.addData("Position Current Position ", position.getCurrentPosition());
                 //telemetry.addData("Position Target Position ", position.getTargetPosition());
+                telemetry.addData("Position Target Position ", hsvValues[0]);
                 //stoneManipulator.displayTarget();
                 //stoneManipulator.displayPlacement();
                 //stoneManipulator.displayActuators();
