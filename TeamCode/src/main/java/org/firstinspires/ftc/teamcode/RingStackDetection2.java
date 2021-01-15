@@ -122,40 +122,36 @@ public class RingStackDetection2 {
         quitTime = System.currentTimeMillis() + timelimit;
         timeLeft = true;
         /** Wait for the game to begin */
-        myOpMode.telemetry.addData(">", "Press Play to start op mode");
-        myOpMode.telemetry.update();
+        //myOpMode.telemetry.addData(">", "Press Play to start op mode");
+        //myOpMode.telemetry.update();
         //waitForStart();
 
         //if (myOpMode.opModeIsActive()) {
-            while (myOpMode.opModeIsActive() && timeLeft) {
-                if (tfod != null) {
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                        myOpMode.telemetry.clear();
-                        myOpMode.telemetry.addData("# Object Detected", updatedRecognitions.size());
-                        // step through the list of recognitions and display boundary info.
-                        int i = 0;
-                        for (Recognition recognition : updatedRecognitions) {
-                            myOpMode.telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            myOpMode.telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                    recognition.getLeft(), recognition.getTop());
-                            myOpMode.telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                    recognition.getRight(), recognition.getBottom());
-                            if (i == 0 && recognition.getLabel() == "Single")
-                            {
-                                retRings = Rings2.ONE;
-                            }
-                            if (i == 0 && recognition.getLabel() == "Quad")
-                            {
-                                retRings = Rings2.FOUR;
-
-                            }
+        while (myOpMode.opModeIsActive() && timeLeft) {
+            if (tfod != null) {
+                // getUpdatedRecognitions() will return null if no new information is available since
+                // the last time that call was made.
+                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                if (updatedRecognitions != null) {
+                    //myOpMode.telemetry.clear();
+                    //myOpMode.telemetry.addData("# Object Detected", updatedRecognitions.size());
+                    // step through the list of recognitions and display boundary info.
+                    int i = 0;
+                    for (Recognition recognition : updatedRecognitions) {
+                        //myOpMode.telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                        //myOpMode.telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f", recognition.getLeft(), recognition.getTop());
+                        //myOpMode.telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",recognition.getRight(), recognition.getBottom());
+                        if (i == 0 && recognition.getLabel() == "Single") {
+                            retRings = Rings2.ONE;
                         }
-                        myOpMode.telemetry.addData("RetRings: ", retRings);
-                        myOpMode.telemetry.update();
+                        if (i == 0 && recognition.getLabel() == "Quad") {
+                            retRings = Rings2.FOUR;
+
+                        }
                     }
+                    //myOpMode.telemetry.addData("RetRings: ", retRings);
+                    //myOpMode.telemetry.update();
+                }
                 }
                 if (System.currentTimeMillis() > (quitTime - 100 )) {
                     timeLeft = false;
