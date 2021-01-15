@@ -64,18 +64,8 @@ public class Driver_20_21 extends LinearOpMode {
         telemetry.addData("      ", retVal);
         telemetry.update();
 
-        telemetry.addData("Status", "Configuring StoneManipulator");
-        //stoneManipulator.init(this,robot.lift, robot.deploy, robot.position,
-        //                      robot.orientation, robot.clamp, robot.color1, robot.color2,
-        //                      robot.distanceLeft, robot.distanceRight, robot.distanceStone);
+        telemetry.addData("Status", "Configuring Robot");
 
-        //lift.initialize(robot.lift, LinearActuator.ACTUATOR_TYPE.PULLEY_LINEAR_SLIDE, 28, 50.9, 30, 1.25,this, true);
-        //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
-        //deploy.initialize(robot.deploy, LinearActuator.ACTUATOR_TYPE.LEAD_SCREW, 28, 71.2, 8, 8.6,6, this, true);
-        //deploy.move (0.0, LinearActuator.MOVETYPE.AUTOMATIC);
-        //position.initialize(robot.deploy, LinearActuator.ACTUATOR_TYPE.LEAD_SCREW, 28, 13.7, 8, 8.6,6, this, true);
-        //position.move (0.0, LinearActuator.MOVETYPE.AUTOMATIC);
-        // Initialize some of the timing variables
         long CurrentTime = System.currentTimeMillis();
         long LastSensor = CurrentTime;
         long LastEncoderRead = CurrentTime + 5;
@@ -109,15 +99,11 @@ public class Driver_20_21 extends LinearOpMode {
         double shooterPower = 0;
 
         double intakePower = 0;
-        int leftBumperCnt = 0;
-        int rightBumperCnt = 0;
-        final int BUMPTHRESHOLD = 5;
 
         double angle = 0.0;
         double magnitude = 0.0;
 
         Color currentColor = Color.ERROR;
-
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();

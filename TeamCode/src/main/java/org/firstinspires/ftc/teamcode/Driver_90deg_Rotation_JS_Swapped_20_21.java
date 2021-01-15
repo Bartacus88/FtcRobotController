@@ -34,9 +34,6 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
     public void runOpMode() {
 
         HardwareDef_20_21.STATUS retVal;
-
-
-
         /*
          * Initialize all of the robot hardware.
          * The init() method of the hardware class does all the work here
@@ -51,18 +48,8 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
         telemetry.addData("      ", retVal);
         telemetry.update();
 
-        telemetry.addData("Status", "Configuring StoneManipulator");
-        //stoneManipulator.init(this,robot.lift, robot.deploy, robot.position,
-        //                      robot.orientation, robot.clamp, robot.color1, robot.color2,
-        //                      robot.distanceLeft, robot.distanceRight, robot.distanceStone);
+        telemetry.addData("Status", "Configuring Robot");
 
-        //lift.initialize(robot.lift, LinearActuator.ACTUATOR_TYPE.PULLEY_LINEAR_SLIDE, 28, 50.9, 30, 1.25,this, true);
-        //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
-        //deploy.initialize(robot.deploy, LinearActuator.ACTUATOR_TYPE.LEAD_SCREW, 28, 71.2, 8, 8.6,6, this, true);
-        //deploy.move (0.0, LinearActuator.MOVETYPE.AUTOMATIC);
-        //position.initialize(robot.deploy, LinearActuator.ACTUATOR_TYPE.LEAD_SCREW, 28, 13.7, 8, 8.6,6, this, true);
-        //position.move (0.0, LinearActuator.MOVETYPE.AUTOMATIC);
-        // Initialize some of the timing variables
         long CurrentTime = System.currentTimeMillis();
         long LastSensor = CurrentTime;
         long LastEncoderRead = CurrentTime + 5;
@@ -143,16 +130,16 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 LastController = CurrentTime;
 
                 //Set to low bridge transition
-                if (gamepad1.a || gamepad2.x) {
+                if (gamepad1.a || gamepad2.a) {
                     //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
-                    shooterPower = intakePower;
+                    shooterPower = Math.max(0.2, intakePower);
                 } else {
                     shooterPower = 0;
                 }
 
 
                 if (gamepad2.left_trigger > 0.05) {
-                    intakePower = (gamepad2.left_trigger * -0.25);
+                    intakePower = (gamepad2.left_trigger * -0.75);
                     shooterPower = intakePower;
                 } else if (gamepad1.right_trigger > 0.05 || gamepad2.right_trigger > 0.05) {
                     intakePower = Math.max(gamepad1.right_trigger, gamepad2.right_trigger) * shooterIntakePowerSetting;
@@ -161,16 +148,16 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 }
 
 
-                if (gamepad2.a) {
+                if (gamepad2.x) {
                     //Move position is in percentage. Increase angle by 0.000125% for every cycle the gamepad2.a button is pressed.
                     // Equation: Incrementor*CONTROLLERPERIOD*PeriodsButtonIsPressed
                     //If "CONTROLLERPERIOD" is 20 (meaning 20ms) That means 50 periods occur in one second (1000ms/20ms).
                     //0.000125%/period * 20 * 50periods = 12.5% increase in angle (45deg) after one second.
                     wobbleTarget += 0.000125 * CONTROLLERPERIOD;
-                   lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
-               }
+                    lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
+                }
                 if (gamepad2.b) {
-                        // same as for increment.
+                    // same as for increment.
                     wobbleTarget -= 0.000125 * CONTROLLERPERIOD;
                     lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
