@@ -147,6 +147,21 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     intakePower = 0;
                 }
 
+                //New Idea for shooting/intaking rings on controller 2.
+                //Proportional control forwards and backwards for shooter (left) and intake (right) using the joysticks
+                // This would allow the running of the shooter backwards while picking up rings,
+                // So that the first ring does not fire until ready.
+                // if this is implemented it may be best to comment out the above shooter code.
+                /*
+                if (Math.abs(gamepad2.left_stick_y) > 0.05)
+                {
+                    shooterPower = gamepad2.left_stick_y;
+                }
+                if (Math.abs(gamepad2.right_stick_y) > 0.05)
+                {
+                    intakePower = gamepad2.right_stick_y;
+                }
+                 */
 
                 if (gamepad2.x) {
                     //Move position is in percentage. Increase angle by 0.000125% for every cycle the gamepad2.a button is pressed.
@@ -162,6 +177,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
 
+                //Do we want to remove the ability for controller one to move the wobble arm?
                 if (gamepad1.b) {
                     //Move position is in percentage.  Therefore don't give it 75 for 75 deg.  Give it 75/360 = 0.208
                     lineAct.move(0.208, LinearActuator.MOVETYPE.AUTOMATIC);
