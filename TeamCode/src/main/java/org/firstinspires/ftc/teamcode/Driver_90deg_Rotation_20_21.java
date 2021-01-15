@@ -7,6 +7,7 @@ package org.firstinspires.ftc.teamcode;
  *
  */
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @SuppressWarnings("WeakerAccess")
 @TeleOp(name = "JK Drive Opmode Sideways", group = "HardwarePushbot")
-//@Disabled
+@Disabled
 public class Driver_90deg_Rotation_20_21 extends LinearOpMode {
     private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive = new Drive();
