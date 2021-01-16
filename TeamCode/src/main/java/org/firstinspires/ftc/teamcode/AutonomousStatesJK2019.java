@@ -69,44 +69,51 @@ package org.firstinspires.ftc.teamcode;
 
 
 
-import android.os.SystemClock;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-
-
 public class AutonomousStatesJK2019 {
     //Define Robot Hardware and classes here
-    private HardwareDefinitionJK2019 robot    = new HardwareDefinitionJK2019();
-    private Drive robotDrive                  = new Drive();
+    private HardwareDef_20_21 robot = new HardwareDef_20_21();
+    private Drive robotDrive = new Drive();
     private RingStackDetection2 RingStackDetection2 = new RingStackDetection2();
 
     //Define all of the available states for AutoState.   Add new states before PAUSE
-    public enum AutoStates {MOVE, PAUSE, WAIT;}
+    public enum AutoStates {MOVE, MOVE_COLOR, PAUSE, WAIT;}
 
 
     //Define AutoState run intervals here
     private final long SENSORPERIOD     = 20;
     private final long SERVOPERIOD      = 20;
     private final long NAVPERIOD        = 20;
-    private final long MOTORPERIOD      = 20;
-    private final long TELEMETRYPERIOD  = 500;
-    private float stageTime             = 0;
-    int CurrentAutoState                = 0;
-    static final int   THIRTY_SECONDS   = 30 * 1000;
+    private final long MOTORPERIOD = 20;
+    private final long TELEMETRYPERIOD = 500;
+    private float stageTime = 0;
+    int CurrentAutoState = 0;
+    static final int THIRTY_SECONDS = 30 * 1000;
 
     //Needed to check "starter rings"
     RingStackDetection2.Rings2 numRingsTest;
-    boolean ringschecked                = false;
-    int ringArray                       = 0;
+    boolean ringschecked = false;
+    int ringArray = 0;
 
-    public void runOpMode(LinearOpMode opMode, HardwareMap hardwareMap, AutoCommand cmd_FOUR[],AutoCommand cmd_ONE[],AutoCommand cmd_NONE[]) {
+    public enum Color {
+        NOCOLOR, //0
+        ERROR,   //1
+        BLUE,    //2
+        RED,     //3
+        YELLOW   //4
+    }
 
-        HardwareDefinitionJK2019.STATUS retVal;
+    float hsvValues[] = {0F, 0F, 0F};
+    Color currentColor = Color.ERROR;
+
+    public void runOpMode(LinearOpMode opMode, HardwareMap hardwareMap, AutoCommand cmd_FOUR[], AutoCommand cmd_ONE[], AutoCommand cmd_NONE[]) {
+
+        HardwareDef_20_21.STATUS retVal;
         /*
          * Initialize all of the robot hardware.
          * The init() method of the hardware class does all the work here
@@ -224,7 +231,7 @@ public class AutonomousStatesJK2019 {
         while (opMode.opModeIsActive()) {
             CurrentTime = System.currentTimeMillis();
             RingStackDetection2.detectRingStack(1000);
-                numRingsTest = RingStackDetection2.retRings;
+            numRingsTest = RingStackDetection2.retRings;
 
             /* *******************************************************************
              *                SENSORS
@@ -234,6 +241,11 @@ public class AutonomousStatesJK2019 {
              *********************************************************************/
             if (CurrentTime - LastSensor > SENSORPERIOD) {
                 LastSensor = CurrentTime;
+
+                android.graphics.Color.RGBToHSV(robot.color1.red() * 8, robot.color1.green() * 8, robot.color1.blue() * 8, hsvValues);
+                currentColor = DetectColor((int) hsvValues[0]);
+
+
             }
 
 
@@ -261,6 +273,18 @@ public class AutonomousStatesJK2019 {
                                 stage_complete = true;
                             }
                             break;
+                        case MOVE_COLOR:
+                            if (currentColor == Color.YELLOW) {
+                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                                stage_complete = true;
+                            } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                                robotDrive.move(cmd_FOUR[CurrentAutoState].moveType, (int) cmd_FOUR[CurrentAutoState].value1, cmd_FOUR[CurrentAutoState].value2);
+                            }
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                                stage_complete = true;
+                            }
+                            break;
                         case PAUSE:
                         case WAIT:
                         default:
@@ -278,6 +302,18 @@ public class AutonomousStatesJK2019 {
                                 stage_complete = true;
                             }
                             break;
+                        case MOVE_COLOR:
+                            if (currentColor == Color.YELLOW) {
+                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                                stage_complete = true;
+                            } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                                robotDrive.move(cmd_FOUR[CurrentAutoState].moveType, (int) cmd_FOUR[CurrentAutoState].value1, cmd_FOUR[CurrentAutoState].value2);
+                            }
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                                stage_complete = true;
+                            }
+                            break;
                         case PAUSE:
                         case WAIT:
                         default:
@@ -289,6 +325,18 @@ public class AutonomousStatesJK2019 {
                         case MOVE:
                             if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
                                 robotDrive.move(cmd_ONE[CurrentAutoState].moveType, (int) cmd_ONE[CurrentAutoState].value1, cmd_ONE[CurrentAutoState].value2);
+                            }
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                                stage_complete = true;
+                            }
+                            break;
+                        case MOVE_COLOR:
+                            if (currentColor == Color.YELLOW) {
+                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                                stage_complete = true;
+                            } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                                robotDrive.move(cmd_FOUR[CurrentAutoState].moveType, (int) cmd_FOUR[CurrentAutoState].value1, cmd_FOUR[CurrentAutoState].value2);
                             }
                             if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
                                 robotDrive.move(Drive.MoveType.STOP, 0, 0);
@@ -356,7 +404,7 @@ public class AutonomousStatesJK2019 {
              ****************************************************/
             if (CurrentTime - LastServo > SERVOPERIOD) {
                 LastServo = CurrentTime;
- 
+
             }
 
 
@@ -391,6 +439,7 @@ public class AutonomousStatesJK2019 {
                 }
                 else
                 {
+                    opMode.telemetry.addData("Color1       : ", currentColor);
                     opMode.telemetry.addData("Num Rings Test ", RingStackDetection2.retRings);
                     opMode.telemetry.addData("Current index: ", CurrentAutoState);
                     opMode.telemetry.addData("Current State: ", cmd_NONE[CurrentAutoState].state);
@@ -399,13 +448,115 @@ public class AutonomousStatesJK2019 {
                     opMode.telemetry.addData("Value 2      : ", cmd_NONE[CurrentAutoState].value2);
                     opMode.telemetry.addData("Value 3      : ", cmd_NONE[CurrentAutoState].value3);
                     opMode.telemetry.addData("Value 4      : ", cmd_NONE[CurrentAutoState].value4);
+
                     opMode.telemetry.update();
                 }
             }
         } // end of while opmode is active
-        opMode.telemetry.addData("Num Rings Test ", RingStackDetection2.retRings);
-        opMode.telemetry.addData("Path", "Complete");
-        opMode.telemetry.update();
+        //opMode.telemetry.addData("Num Rings Test ", RingStackDetection2.retRings);
+        //opMode.telemetry.addData("Path", "Complete");
+        //opMode.telemetry.update();
     }
+
+    public static int redCnt = 0;
+    public static int blueCnt = 0;
+    public static int yellowCnt = 0;
+
+    public static Color DetectColor(int hueIn) {
+        final int blueMin = 197; //Blue Starts at 197deg and goes to 217deg.
+        final int blueMax = 217;
+        final int redMin = 351; //Red Starts at 351deg and wraps around to 11deg.
+        final int redMax = 11;
+        final int yellowMin = 102; //Yellow Starts at 102deg and goes to 122deg. Although we want white, we named this yellow.
+        final int yellowMax = 122;
+
+
+        Color detectedColor = Color.ERROR;
+
+        //ensure blueCnt,redCnt,yellowCnt are always greater than 0
+
+
+        if (hueIn >= blueMin && hueIn <= blueMax) {
+            detectedColor = Color.BLUE;
+        }
+
+        if (hueIn >= redMin || hueIn <= redMax) //Red is a special value when you consider it with the hue values since it wraps around. So we used "OR" to deterimine instead of &&
+        {
+            detectedColor = Color.RED;
+        }
+
+        if (hueIn >= yellowMin && hueIn <= yellowMax) {
+            detectedColor = Color.YELLOW;
+        }
+
+        return (detectedColor);
+    }
+
+
+  /*
+    public static Color DetectColor(int hueIn) {
+        final int blueMin = 220; //Blue Starts at 220deg and goes to 240deg.
+        final int blueMax = 240;
+        final int redMin = 350; //Red Starts at 350deg and wraps around to 10deg.
+        final int redMax = 10;
+        final int yellowMin = 45; //Yellow Starts at 45deg and goes to 65deg
+        final int yellowMax = 65;
+
+        Color detectedColor = Color.ERROR;
+
+        redCnt--;
+        yellowCnt--;
+        blueCnt--;
+
+        //ensure blueCnt,redCnt,yellowCnt are always greater than 0
+
+
+        if (hueIn >= blueMin && hueIn <= blueMax) {
+            blueCnt += 2; //Increment twice because we already decremented
+        }
+
+        if (hueIn >= redMin || hueIn <= redMax) //Red is a special value when you consider it with the hue values since it wraps around. So we used "OR" to deterimine instead of &&
+        {
+            redCnt += 2; //Increment twice because we already decremented
+        }
+
+        if (hueIn >= yellowMin && hueIn <= yellowMax) {
+            yellowCnt += 2; //Increment twice because we already decremented
+        }
+
+        //ensure blueCnt,redCnt,yellowCnt are always less than 5
+        //                IN 65535  OUT IS 5
+        //                    IN 6  OUT IS 5
+        //                    IN 4  OUT IS 4
+        //                    IN 3  OUT IS 3
+        //                    IN 2  OUT IS 2
+        //                    IN 1  OUT IS 1
+        //                    IN 0  OUT IS 0
+        blueCnt = Math.min(blueCnt, 2);
+        redCnt = Math.min(redCnt, 2);
+        yellowCnt = Math.min(yellowCnt, 2);
+        blueCnt = Math.max(blueCnt, 0);
+        redCnt = Math.max(redCnt, 0);
+        yellowCnt = Math.max(yellowCnt, 0);
+
+        //blueCnt = 0 redCnt = 0 yellow = 4
+        if (blueCnt >= 1 && redCnt <= 0 && yellowCnt <= 0) {
+            //System.out.print("Blue is your color");
+            detectedColor = Color.BLUE;
+        } else if (redCnt >= 1 && yellowCnt <= 0 && blueCnt <= 0) {
+            //System.out.print("Red is your color");
+            detectedColor = Color.RED;
+        } else if (yellowCnt >= 1 && blueCnt <= 0 && redCnt <= 0) {
+            //System.out.print("Yellow is your color");
+            detectedColor = Color.YELLOW;
+        } else {
+            //System.out.print("No color detected");
+            detectedColor = Color.NOCOLOR;
+        }
+
+        return (detectedColor);
+
+    } */
+
 
 }
