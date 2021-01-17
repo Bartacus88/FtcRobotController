@@ -85,6 +85,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
         double intakePower = 0;
 
         double shooterIntakePowerSetting = 0.75;
+        double ringDeflectorPosition = 0.0;
 
         double angle = 0.0;
         double magnitude = 0.0;
@@ -129,9 +130,8 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
             if (CurrentTime - LastController > CONTROLLERPERIOD) {
                 LastController = CurrentTime;
 
-                //Set to low bridge transition
+                //Start shooter before intake moves rings to shooter.
                 if (gamepad1.a || gamepad2.a) {
-                    //lift.move(0.0, LinearActuator.MOVETYPE.AUTOMATIC);
                     shooterPower = Math.max(0.2, intakePower);
                 } else {
                     shooterPower = 0;
@@ -206,6 +206,15 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 }
                 if (gamepad2.dpad_down) {
                     shooterIntakePowerSetting = 0.25;
+                }
+
+                //Ring Deflector Servo
+                if (gamepad2.right_bumper) {
+                    //servo
+                    ringDeflectorPosition += 0.000125 * CONTROLLERPERIOD;
+                }
+                if (gamepad2.left_bumper) {
+                    ringDeflectorPosition -= 0.000125 * CONTROLLERPERIOD;
                 }
 
 
@@ -300,6 +309,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
              ****************************************************/
             if (CurrentTime - LastServo > SERVOPERIOD) {
                 LastServo = CurrentTime;
+                robot.ringDefector.setPosition(ringDeflectorPosition);
             }
 
 
@@ -335,16 +345,8 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
             if (CurrentTime - LastTelemetry > TELEMETRYPERIOD) {
                 LastTelemetry = CurrentTime;
                 telemetry.clear();
-                //telemetry.addData("Lift Current Position ", lift.getCurrentPosition());
-                //telemetry.addData("Lift Target Position ", lift.getTargetPosition());
-                //telemetry.addData("Deploy Current Position ", deploy.getCurrentPosition());
-                //telemetry.addData("Deploy Target Position ", deploy.getTargetPosition());
-                //telemetry.addData("Position Current Position ", position.getCurrentPosition());
-                //telemetry.addData("Position Target Position ", position.getTargetPosition());
-                //stoneManipulator.displayTarget();
-                //stoneManipulator.displayPlacement();
-                //stoneManipulator.displayActuators();
-                //stoneManipulator.displaySensors();
+                telemetry.addData("Deflector Position Var", ringDeflectorPosition);
+                telemetry.addData("Deflector Position Actual", robot.ringDefector.getPosition());
                 telemetry.update();
             }
         }

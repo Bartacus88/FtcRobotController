@@ -92,8 +92,7 @@ public class HardwareDef_20_21
     public DcMotor  wobbleGoalMotor = null; //Has encoder, Ratio 50:1, Expansion Hub, Port 1
 
     /*SERVOS*/
-    //No Servos at the moment.
-    //But we may need to add one for the Wobble goal.
+    public Servo ringDefector = null;
 
 
     /* SENSORS */
@@ -172,8 +171,7 @@ public class HardwareDef_20_21
 
 
         // SERVO
-        //No Servos at the moment.
-        //But we may need to add one for the Wobble goal.
+        ringDefector = hwMap.get(Servo.class, "ring_deflector");
 
 
         //SENSORS

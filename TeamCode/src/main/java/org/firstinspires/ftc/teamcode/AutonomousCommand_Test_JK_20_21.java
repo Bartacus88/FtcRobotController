@@ -13,8 +13,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
-@Autonomous(name="JK Auto Pivot R90 L270", group="Pushbot")
-//@Disabled
+@Autonomous(name = "JK Auto Pivot R90 L270", group = "Pushbot")
+@Disabled
 @SuppressWarnings("WeakerAccess")
 public class AutonomousCommand_Test_JK_20_21 extends LinearOpMode {
 
