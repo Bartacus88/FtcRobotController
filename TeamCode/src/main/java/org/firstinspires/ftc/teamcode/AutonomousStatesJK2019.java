@@ -82,7 +82,7 @@ public class AutonomousStatesJK2019 {
     private RingStackDetection2 RingStackDetection2 = new RingStackDetection2();
 
     //Define all of the available states for AutoState.   Add new states before PAUSE
-    public enum AutoStates {MOVE, MOVE_COLOR, PAUSE, WAIT;}
+    public enum AutoStates {MOVE, MOVE_COLOR, SHOOT_RING, PAUSE, WAIT;}
 
 
     //Define AutoState run intervals here
@@ -211,15 +211,28 @@ public class AutonomousStatesJK2019 {
         /*
          * Define and initialize all of the loop timing variables
          */
-        long CurrentTime    = System.currentTimeMillis();
-        long LastSensor     = CurrentTime;
-        long LastServo      = CurrentTime + 10;
-        long LastNav        = CurrentTime + 15;
-        long LastMotor      = CurrentTime + 20;
-        long LastTelemetry  = CurrentTime + 17;
+        long CurrentTime = System.currentTimeMillis();
+        long LastSensor = CurrentTime;
+        long LastServo = CurrentTime + 10;
+        long LastNav = CurrentTime + 15;
+        long LastMotor = CurrentTime + 20;
+        long LastTelemetry = CurrentTime + 17;
         ElapsedTime runtime = new ElapsedTime();
 
         RingStackDetection2.configureDetection(opMode);
+
+
+        double shooterPower = 0.0;
+        double intakePower = 0.0;
+        double ringDeflectorPosition = 0.0;
+        robot.backShooter.setPower(0);
+        robot.frontShooter.setPower(0);
+        robot.transportIntake.setPower(0);
+
+        long shootRingTime = 0;
+        final long FIRE_RING_TIME = 15 * NAVPERIOD;
+        final long SHOOTER_SPOOL_TIME = 5 * NAVPERIOD;
+        final long SHOOT_RING_MAX_TIME = 25 * NAVPERIOD;
 
         opMode.waitForStart();
         runtime.reset();
@@ -263,7 +276,7 @@ public class AutonomousStatesJK2019 {
                 stageTime += NAVPERIOD;
 
                 if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.FOUR)
-                    switch (cmd_NONE[CurrentAutoState].state) {
+                    switch (cmd_FOUR[CurrentAutoState].state) {
                         case MOVE:
                             if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
                                 robotDrive.move(cmd_FOUR[CurrentAutoState].moveType, (int) cmd_FOUR[CurrentAutoState].value1, cmd_FOUR[CurrentAutoState].value2);
@@ -292,7 +305,7 @@ public class AutonomousStatesJK2019 {
                             break;
                     }
                 else if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.ONE) {
-                    switch (cmd_NONE[CurrentAutoState].state) {
+                    switch (cmd_ONE[CurrentAutoState].state) {
                         case MOVE:
                             if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
                                 robotDrive.move(cmd_ONE[CurrentAutoState].moveType, (int) cmd_ONE[CurrentAutoState].value1, cmd_ONE[CurrentAutoState].value2);
@@ -307,7 +320,7 @@ public class AutonomousStatesJK2019 {
                                 robotDrive.move(Drive.MoveType.STOP, 0, 0);
                                 stage_complete = true;
                             } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
-                                robotDrive.move(cmd_FOUR[CurrentAutoState].moveType, (int) cmd_FOUR[CurrentAutoState].value1, cmd_FOUR[CurrentAutoState].value2);
+                                robotDrive.move(cmd_ONE[CurrentAutoState].moveType, (int) cmd_ONE[CurrentAutoState].value1, cmd_ONE[CurrentAutoState].value2);
                             }
                             if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
                                 robotDrive.move(Drive.MoveType.STOP, 0, 0);
@@ -324,7 +337,7 @@ public class AutonomousStatesJK2019 {
                     switch (cmd_NONE[CurrentAutoState].state) {
                         case MOVE:
                             if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
-                                robotDrive.move(cmd_ONE[CurrentAutoState].moveType, (int) cmd_ONE[CurrentAutoState].value1, cmd_ONE[CurrentAutoState].value2);
+                                robotDrive.move(cmd_ONE[CurrentAutoState].moveType, (int) cmd_NONE[CurrentAutoState].value1, cmd_NONE[CurrentAutoState].value2);
                             }
                             if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
                                 robotDrive.move(Drive.MoveType.STOP, 0, 0);
@@ -336,10 +349,30 @@ public class AutonomousStatesJK2019 {
                                 robotDrive.move(Drive.MoveType.STOP, 0, 0);
                                 stage_complete = true;
                             } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
-                                robotDrive.move(cmd_FOUR[CurrentAutoState].moveType, (int) cmd_FOUR[CurrentAutoState].value1, cmd_FOUR[CurrentAutoState].value2);
+                                robotDrive.move(cmd_NONE[CurrentAutoState].moveType, (int) cmd_NONE[CurrentAutoState].value1, cmd_NONE[CurrentAutoState].value2);
                             }
                             if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
                                 robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                                stage_complete = true;
+                            }
+                            break;
+                        case SHOOT_RING:
+                            shootRingTime += NAVPERIOD;
+                            shooterPower = 0.2;
+                            intakePower = 0.0;
+                            ringDeflectorPosition = cmd_NONE[CurrentAutoState].value3;
+
+                            if (shootRingTime < FIRE_RING_TIME && shootRingTime >= SHOOTER_SPOOL_TIME) {
+                                shooterPower = cmd_NONE[CurrentAutoState].value1;
+                                intakePower = cmd_NONE[CurrentAutoState].value2;
+                            }
+
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE || shootRingTime >= SHOOT_RING_MAX_TIME) {
+                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                                shooterPower = 0.0;
+                                intakePower = 0.0;
+                                ringDeflectorPosition = 0.0;
+                                shootRingTime = 0;
                                 stage_complete = true;
                             }
                             break;
@@ -395,6 +428,10 @@ public class AutonomousStatesJK2019 {
                 LastMotor = CurrentTime;
                 //Have the Drive() class run an update on all of the drive train motors
                 robotDrive.update();
+                robot.transportIntake.setPower(intakePower);
+                robot.frontShooter.setPower(shooterPower);
+                robot.backShooter.setPower(shooterPower);
+
             }
 
             /* ***************************************************
@@ -404,7 +441,7 @@ public class AutonomousStatesJK2019 {
              ****************************************************/
             if (CurrentTime - LastServo > SERVOPERIOD) {
                 LastServo = CurrentTime;
-
+                robot.ringDefector.setPosition(ringDeflectorPosition);
             }
 
 
