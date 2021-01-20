@@ -84,8 +84,8 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
 
         double intakePower = 0;
 
-        double shooterIntakePowerSetting = 0.75;
-        double ringDeflectorPosition = 0.0;
+        double shooterIntakePowerSetting = 1.0;
+        double ringDeflectorPosition = 1.0;
 
         double angle = 0.0;
         double magnitude = 0.0;
@@ -95,7 +95,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
         telemetry.update();
 
         ElapsedTime runtime = new ElapsedTime();
-
+        robot.ringDefector.setPosition(ringDeflectorPosition);
         robot.wobbleGoalMotor.setTargetPosition(0); //Must state that our initial position is refered to as "0" or the "datum"
         lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1,
                 1440, 1, this, true);
@@ -180,41 +180,43 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 //Do we want to remove the ability for controller one to move the wobble arm?
                 if (gamepad1.b) {
                     //Move position is in percentage.  Therefore don't give it 75 for 75 deg.  Give it 75/360 = 0.208
-                    lineAct.move(0.208, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //lineAct.move(0.208, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.x) {
                     //Move position is in percentage.  Therefore don't give it 160 for 160 deg.  Give it 160/360 = 0.444
-                    lineAct.move(0.444, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //lineAct.move(0.444, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.y) {
                     //Move position is in percentage.  Therefore don't give it 85 for 85 deg.  Give it 150/360 =  0.236
-                    lineAct.move(0.236, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //lineAct.move(0.236, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.right_bumper) {
                     //Move position is in percentage.  Therefore don't give it 140 for 140 deg.  Give it 140/360 = 0.388
-                    lineAct.move(0.388, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //lineAct.move(0.388, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad1.left_bumper) {
                     //Move position is in percentage.  Therefore don't give it 110 for 110 deg.  Give it 110/360 = 0.361
-                    lineAct.move(0.305, LinearActuator.MOVETYPE.AUTOMATIC);
+                    //lineAct.move(0.305, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad2.dpad_up) {
-                    shooterIntakePowerSetting = 0.75;
+                    shooterIntakePowerSetting = 0.95;
                 }
                 if (gamepad2.dpad_left) {
-                    shooterIntakePowerSetting = 0.50;
+                    shooterIntakePowerSetting = 0.85;
                 }
                 if (gamepad2.dpad_down) {
-                    shooterIntakePowerSetting = 0.25;
+                    shooterIntakePowerSetting = 0.75;
                 }
 
                 //Ring Deflector Servo
                 if (gamepad2.right_bumper) {
                     //servo
-                    ringDeflectorPosition += 0.000125 * CONTROLLERPERIOD;
+                    ringDeflectorPosition += 0.00125 * CONTROLLERPERIOD;
+                    ringDeflectorPosition = Math.min(1, ringDeflectorPosition);
                 }
                 if (gamepad2.left_bumper) {
-                    ringDeflectorPosition -= 0.000125 * CONTROLLERPERIOD;
+                    ringDeflectorPosition -= 0.00125 * CONTROLLERPERIOD;
+                    ringDeflectorPosition = Math.max(0, ringDeflectorPosition);
                 }
 
 
