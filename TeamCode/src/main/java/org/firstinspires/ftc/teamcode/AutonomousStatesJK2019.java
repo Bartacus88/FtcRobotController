@@ -229,10 +229,10 @@ public class AutonomousStatesJK2019 {
         robot.frontShooter.setPower(0);
         robot.transportIntake.setPower(0);
 
-        long shootRingTime = 0;
-        final long FIRE_RING_TIME = 15 * NAVPERIOD;
+        //long shootRingTime = 0;
+        final long FIRE_RING_TIME = 10 * NAVPERIOD;
         final long SHOOTER_SPOOL_TIME = 5 * NAVPERIOD;
-        final long SHOOT_RING_MAX_TIME = 25 * NAVPERIOD;
+        //final long SHOOT_RING_MAX_TIME = 25 * NAVPERIOD;
 
         opMode.waitForStart();
         runtime.reset();
@@ -357,8 +357,9 @@ public class AutonomousStatesJK2019 {
                             }
                             break;
                         case SHOOT_RING:
+                            /*
                             shootRingTime += NAVPERIOD;
-                            shooterPower = 0.2;
+                            shooterPower = cmd_NONE[CurrentAutoState].value1;
                             intakePower = 0.0;
                             ringDeflectorPosition = cmd_NONE[CurrentAutoState].value3;
 
@@ -373,6 +374,31 @@ public class AutonomousStatesJK2019 {
                                 intakePower = 0.0;
                                 ringDeflectorPosition = 0.0;
                                 shootRingTime = 0;
+                                stage_complete = true;
+                            }
+                            break;
+                            */
+                            if (stageTime < SHOOTER_SPOOL_TIME) {
+                                //robotDrive.move(cmd_NONE[CurrentAutoState].moveType, (int)0, 0);
+                                shooterPower = cmd_NONE[CurrentAutoState].value1;
+                                intakePower = 0.0;
+                                ringDeflectorPosition = cmd_NONE[CurrentAutoState].value3;
+                            } else if (stageTime < FIRE_RING_TIME && stageTime >= SHOOTER_SPOOL_TIME) {
+                                //robotDrive.move(cmd_NONE[CurrentAutoState].moveType, (int)0, 0);
+                                shooterPower = cmd_NONE[CurrentAutoState].value1;
+                                intakePower = cmd_NONE[CurrentAutoState].value2;
+                            } else {
+                                //robotDrive.move(cmd_NONE[CurrentAutoState].moveType, (int)0, 0);
+                                shooterPower = 0;
+                                intakePower = 0;
+                                if (CurrentAutoState < (cmd_NONE.length - 1)) {
+                                    CurrentAutoState++;
+                                }
+                            }
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                                shooterPower = 0;
+                                intakePower = 0;
+                                //robotDrive.move(Drive.MoveType.STOP, 0, 0);
                                 stage_complete = true;
                             }
                             break;

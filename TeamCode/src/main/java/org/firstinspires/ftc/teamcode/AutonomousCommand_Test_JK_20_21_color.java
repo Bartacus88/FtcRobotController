@@ -18,11 +18,11 @@ public class AutonomousCommand_Test_JK_20_21_color extends LinearOpMode {
 
     AutonomousStatesJK2019 runMe = new AutonomousStatesJK2019();
     AutoCommand cmd_NONE[] = {
+            //                             for SHOOT_RING State Value 1 = Shooter Power, Value 2 = Intake Power, Value 3 = Ring deflector Position.
+            //new AutoCommand(AutonomousStates.AutoStates.SHOOT_RING, Drive.MoveType.REVERSE, 0.75, 0.75, 1.0, 0, 4000),
             new AutoCommand(AutonomousStates.AutoStates.MOVE_COLOR, Drive.MoveType.FORWARD, 50, 0.4, 0, 0, 5000), //This barely moved backwards.
             new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 12, 0.2, 0, 0, 2000),
             new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 12, 0.2, 0, 0, 2000),
-            //                             for SHOOT_RING State Value 1 = Shooter Power, Value 2 = Intake Power, Value 3 = Ring deflector Position.
-            //new AutoCommand(AutonomousStates.AutoStates.SHOOT_RING, null, 0.4, 0.4, 0.0, 0, 2000),
             new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 18000),
 
     };
