@@ -150,9 +150,9 @@ public class AutonomousStatesJK2019 {
         dParm.motorRatio       = 28;
         dParm.gearRatio        = 20;
         dParm.wheelDiameter    = 3.0;
-        dParm.mecanumAngle     = 45;
-        dParm.pivotTolerance   = Drive.PivotTolerance.ONE_DEGREE;
-        dParm.encoderTolerance = (int)dParm.motorRatio*5;    //!!VERY DANGEROUS TO PLAY WITH | CAN RESULT IN STUCK STATE!!
+        dParm.mecanumAngle = 45;
+        dParm.pivotTolerance = Drive.PivotTolerance.FIVE_DEGREES;
+        dParm.encoderTolerance = (int) dParm.motorRatio * 5;    //!!VERY DANGEROUS TO PLAY WITH | CAN RESULT IN STUCK STATE!!
         dParm.turnBackoff      = 0.45;  // 45 percent backoff
         dParm.backoffMultiplier = 25;    // Make larger for high speed turns.
         dParm.minStartPower    = 0.1;
@@ -357,27 +357,27 @@ public class AutonomousStatesJK2019 {
                             }
                             break;
                         case SHOOT_RING:
-                            /*
-                            shootRingTime += NAVPERIOD;
+
+                            //shootRingTime += NAVPERIOD;
                             shooterPower = cmd_NONE[CurrentAutoState].value1;
                             intakePower = 0.0;
                             ringDeflectorPosition = cmd_NONE[CurrentAutoState].value3;
 
-                            if (shootRingTime < FIRE_RING_TIME && shootRingTime >= SHOOTER_SPOOL_TIME) {
+                            if (stageTime < FIRE_RING_TIME && stageTime >= SHOOTER_SPOOL_TIME) {
                                 shooterPower = cmd_NONE[CurrentAutoState].value1;
                                 intakePower = cmd_NONE[CurrentAutoState].value2;
                             }
 
-                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE || shootRingTime >= SHOOT_RING_MAX_TIME) {
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE || stageTime >= 4000) {
                                 robotDrive.move(Drive.MoveType.STOP, 0, 0);
                                 shooterPower = 0.0;
                                 intakePower = 0.0;
                                 ringDeflectorPosition = 0.0;
-                                shootRingTime = 0;
+                                //stageTime = 0;
                                 stage_complete = true;
                             }
                             break;
-                            */
+                            /*
                             if (stageTime < SHOOTER_SPOOL_TIME) {
                                 //robotDrive.move(cmd_NONE[CurrentAutoState].moveType, (int)0, 0);
                                 shooterPower = cmd_NONE[CurrentAutoState].value1;
@@ -401,7 +401,7 @@ public class AutonomousStatesJK2019 {
                                 //robotDrive.move(Drive.MoveType.STOP, 0, 0);
                                 stage_complete = true;
                             }
-                            break;
+                            break;*/
                         case PAUSE:
                         case WAIT:
                         default:

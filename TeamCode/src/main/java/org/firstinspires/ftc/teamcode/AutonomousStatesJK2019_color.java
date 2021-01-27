@@ -67,6 +67,8 @@ package org.firstinspires.ftc.teamcode;
  */
 
 
+import android.os.SystemClock;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -75,12 +77,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class AutonomousStatesJK2019_color {
     //Define Robot Hardware and classes here
-    private HardwareDef_Bart_20_21 robot = new HardwareDef_Bart_20_21();
+    private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive = new Drive();
-    private RingStackDetection2 RingStackDetection2 = new RingStackDetection2();
+    LinearActuator lineAct = new LinearActuator();
 
     //Define all of the available states for AutoState.   Add new states before PAUSE
-    public enum AutoStates {MOVE, MOVE_COLOR, PAUSE, WAIT;}
+    public enum AutoStates {MOVE, PAUSE, SHOOT_RING, MOVE_COLOR, MOVE_WOBBLE_ARM, WAIT;}
 
 
     //Define AutoState run intervals here
@@ -93,11 +95,6 @@ public class AutonomousStatesJK2019_color {
     int CurrentAutoState = 0;
     static final int THIRTY_SECONDS = 30 * 1000;
 
-    //Needed to check "starter rings"
-    RingStackDetection2.Rings2 numRingsTest;
-    boolean ringschecked = false;
-    int ringArray = 0;
-
     public enum Color {
         NOCOLOR, //0
         ERROR,   //1
@@ -107,11 +104,11 @@ public class AutonomousStatesJK2019_color {
     }
 
     float hsvValues[] = {0F, 0F, 0F};
-    Color currentColor = Color.ERROR;
+    AutonomousStatesJK2019.Color currentColor = AutonomousStatesJK2019.Color.ERROR;
 
-    public void runOpMode(LinearOpMode opMode, HardwareMap hardwareMap, AutoCommand cmd_FOUR[], AutoCommand cmd_ONE[], AutoCommand cmd_NONE[]) {
+    public void runOpMode(LinearOpMode opMode, HardwareMap hardwareMap, AutoCommand cmd[]) {
 
-        HardwareDef_Bart_20_21.STATUS retVal;
+        HardwareDef_20_21.STATUS retVal;
         /*
          * Initialize all of the robot hardware.
          * The init() method of the hardware class does all the work here
@@ -134,8 +131,8 @@ public class AutonomousStatesJK2019_color {
         dParm.center = robot.frontRight; //Just to remove error, serves no purpose as far as I can tell
 
         dParm.frontRight = robot.frontRight;
-        dParm.frontLeft = robot.frontRight;
-        dParm.rearRight = robot.backRight;  //Should be unnecessary, but just keep the nulls away
+        dParm.frontLeft = robot.frontLeft;
+        dParm.rearRight = robot.backRight;
         dParm.rearLeft = robot.backLeft;
         dParm.frPolarity = DcMotorSimple.Direction.FORWARD;
         dParm.flPolarity = DcMotorSimple.Direction.REVERSE;
@@ -168,30 +165,8 @@ public class AutonomousStatesJK2019_color {
          * the autonomous time limit will be exceeded
          */
         int i = 0, t = 0;
-        while (i < cmd_NONE.length) {
-            t += cmd_NONE[i].timeLimit;
-            i++;
-        }
-        if (t > THIRTY_SECONDS) {
-            opMode.telemetry.addLine("WARNING... Autonomous Commands may exceed time");
-            opMode.telemetry.addData("   Allowed", THIRTY_SECONDS);
-            opMode.telemetry.addData("   Actual ", t);
-        }
-        opMode.telemetry.update();
-        opMode.telemetry.setAutoClear(true);
-        while (i < cmd_ONE.length) {
-            t += cmd_ONE[i].timeLimit;
-            i++;
-        }
-        if (t > THIRTY_SECONDS) {
-            opMode.telemetry.addLine("WARNING... Autonomous Commands may exceed time");
-            opMode.telemetry.addData("   Allowed", THIRTY_SECONDS);
-            opMode.telemetry.addData("   Actual ", t);
-        }
-        opMode.telemetry.update();
-        opMode.telemetry.setAutoClear(true);
-        while (i < cmd_FOUR.length) {
-            t += cmd_FOUR[i].timeLimit;
+        while (i < cmd.length) {
+            t += cmd[i].timeLimit;
             i++;
         }
         if (t > THIRTY_SECONDS) {
@@ -214,7 +189,21 @@ public class AutonomousStatesJK2019_color {
         long LastTelemetry = CurrentTime + 17;
         ElapsedTime runtime = new ElapsedTime();
 
-        RingStackDetection2.configureDetection(opMode);
+        double shooterPower = 0.0;
+        double intakePower = 0.0;
+        double ringDeflectorPosition = 0.0;
+        robot.backShooter.setPower(0);
+        robot.frontShooter.setPower(0);
+        robot.transportIntake.setPower(0);
+        robot.wobbleGoalMotor.setTargetPosition(0); //Must state that our initial position is refered to as "0" or the "datum"
+        lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1, 1440, 1, opMode, true);
+
+        //long shootRingTime = 0;
+        final long FIRE_RING_TIME = 10 * NAVPERIOD;
+        final long SHOOTER_SPOOL_TIME = 5 * NAVPERIOD;
+        //final long SHOOT_RING_MAX_TIME = 25 * NAVPERIOD;
+
+        double wobbleTarget = 0.0;
 
         opMode.waitForStart();
         runtime.reset();
@@ -225,8 +214,7 @@ public class AutonomousStatesJK2019_color {
         // run until the end of the match (driver presses STOP)
         while (opMode.opModeIsActive()) {
             CurrentTime = System.currentTimeMillis();
-            RingStackDetection2.detectRingStack(1000);
-            numRingsTest = RingStackDetection2.retRings;
+
 
             /* *******************************************************************
              *                SENSORS
@@ -236,11 +224,8 @@ public class AutonomousStatesJK2019_color {
              *********************************************************************/
             if (CurrentTime - LastSensor > SENSORPERIOD) {
                 LastSensor = CurrentTime;
-
                 android.graphics.Color.RGBToHSV(robot.color1.red() * 8, robot.color1.green() * 8, robot.color1.blue() * 8, hsvValues);
                 currentColor = DetectColor((int) hsvValues[0]);
-
-
             }
 
 
@@ -257,122 +242,97 @@ public class AutonomousStatesJK2019_color {
                 boolean stage_complete = false;
                 stageTime += NAVPERIOD;
 
-                if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.FOUR)
-                    switch (cmd_NONE[CurrentAutoState].state) {
-                        case MOVE:
-                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
-                                robotDrive.move(cmd_FOUR[CurrentAutoState].moveType, (int) cmd_FOUR[CurrentAutoState].value1, cmd_FOUR[CurrentAutoState].value2);
-                            }
-                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
-                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                                stage_complete = true;
-                            }
-                            break;
-                        case MOVE_COLOR:
-                            if (currentColor == Color.YELLOW) {
-                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                                stage_complete = true;
-                            } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
-                                robotDrive.move(cmd_FOUR[CurrentAutoState].moveType, (int) cmd_FOUR[CurrentAutoState].value1, cmd_FOUR[CurrentAutoState].value2);
-                            }
-                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
-                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                                stage_complete = true;
-                            }
-                            break;
-                        case PAUSE:
-                        case WAIT:
-                        default:
+                switch (cmd[CurrentAutoState].state) {
+                    case MOVE:
+                        if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                            robotDrive.move(cmd[CurrentAutoState].moveType, (int) cmd[CurrentAutoState].value1, cmd[CurrentAutoState].value2);
+                        }
+                        if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
                             robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                            break;
-                    }
-                else if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.ONE) {
-                    switch (cmd_NONE[CurrentAutoState].state) {
-                        case MOVE:
-                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
-                                robotDrive.move(cmd_ONE[CurrentAutoState].moveType, (int) cmd_ONE[CurrentAutoState].value1, cmd_ONE[CurrentAutoState].value2);
-                            }
-                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
-                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                                stage_complete = true;
-                            }
-                            break;
-                        case MOVE_COLOR:
-                            if (currentColor == Color.YELLOW) {
-                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                                stage_complete = true;
-                            } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
-                                robotDrive.move(cmd_FOUR[CurrentAutoState].moveType, (int) cmd_FOUR[CurrentAutoState].value1, cmd_FOUR[CurrentAutoState].value2);
-                            }
-                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
-                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                                stage_complete = true;
-                            }
-                            break;
-                        case PAUSE:
-                        case WAIT:
-                        default:
+                            stage_complete = true;
+                        }
+                        break;
+                    case MOVE_COLOR:
+                        if (currentColor == AutonomousStatesJK2019.Color.YELLOW) {
                             robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                            break;
-                    }
-                } else {
-                    switch (cmd_NONE[CurrentAutoState].state) {
-                        case MOVE:
-                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
-                                robotDrive.move(cmd_ONE[CurrentAutoState].moveType, (int) cmd_ONE[CurrentAutoState].value1, cmd_ONE[CurrentAutoState].value2);
-                            }
-                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
-                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                                stage_complete = true;
-                            }
-                            break;
-                        case MOVE_COLOR:
-                            if (currentColor == Color.YELLOW) {
-                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                                stage_complete = true;
-                            } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
-                                robotDrive.move(cmd_FOUR[CurrentAutoState].moveType, (int) cmd_FOUR[CurrentAutoState].value1, cmd_FOUR[CurrentAutoState].value2);
-                            }
-                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
-                                robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                                stage_complete = true;
-                            }
-                            break;
-                        case PAUSE:
-                        case WAIT:
-                        default:
+                            stage_complete = true;
+                        } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                            robotDrive.move(cmd[CurrentAutoState].moveType, (int) cmd[CurrentAutoState].value1, cmd[CurrentAutoState].value2);
+                        }
+                        if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
                             robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                            break;
-                    }
+                            stage_complete = true;
+                        }
+                        break;
+                    case MOVE_WOBBLE_ARM:
+                        wobbleTarget = cmd[CurrentAutoState].value1;
+                        if (stageTime >= cmd[CurrentAutoState].timeLimit) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        }
+                        break;
+                    case SHOOT_RING:
+                        //shootRingTime += NAVPERIOD;
+                        shooterPower = cmd[CurrentAutoState].value1;
+                        intakePower = 0.0;
+                        ringDeflectorPosition = cmd[CurrentAutoState].value3;
+
+                        if (stageTime < FIRE_RING_TIME && stageTime >= SHOOTER_SPOOL_TIME) {
+                            shooterPower = cmd[CurrentAutoState].value1;
+                            intakePower = cmd[CurrentAutoState].value2;
+                        }
+
+                        if (stageTime >= cmd[CurrentAutoState].timeLimit) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            shooterPower = 0.0;
+                            intakePower = 0.0;
+                            ringDeflectorPosition = 0.0;
+                            stage_complete = true;
+                        }
+                        break;
+                            /*
+                            if (stageTime < SHOOTER_SPOOL_TIME) {
+                                //robotDrive.move(cmd_NONE[CurrentAutoState].moveType, (int)0, 0);
+                                shooterPower = cmd_NONE[CurrentAutoState].value1;
+                                intakePower = 0.0;
+                                ringDeflectorPosition = cmd_NONE[CurrentAutoState].value3;
+                            } else if (stageTime < FIRE_RING_TIME && stageTime >= SHOOTER_SPOOL_TIME) {
+                                //robotDrive.move(cmd_NONE[CurrentAutoState].moveType, (int)0, 0);
+                                shooterPower = cmd_NONE[CurrentAutoState].value1;
+                                intakePower = cmd_NONE[CurrentAutoState].value2;
+                            } else {
+                                //robotDrive.move(cmd_NONE[CurrentAutoState].moveType, (int)0, 0);
+                                shooterPower = 0;
+                                intakePower = 0;
+                                if (CurrentAutoState < (cmd_NONE.length - 1)) {
+                                    CurrentAutoState++;
+                                }
+                            }
+                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                                shooterPower = 0;
+                                intakePower = 0;
+                                //robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                                stage_complete = true;
+                            }
+                            */
+
+                    // Same call, have two to make autonomous code easier to read
+                    case PAUSE:
+                    case WAIT:
+                    default:
+                        robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                        break;
                 }
 
                 /*
                  * Check to see if there is another state to run, Reset stage time, possibly
                  * update/clear local parameters if required (robot specific)
                  */
-                if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.FOUR) {
-                    if ((stageTime >= cmd_FOUR[CurrentAutoState].timeLimit) || (stage_complete)) {
-                        stageTime = 0;
-                        //paddlePower = 0;  //CR Servo
-                        if (CurrentAutoState < (cmd_FOUR.length - 1)) {
-                            CurrentAutoState++;
-                        }
-                    }
-                } else if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.ONE) {
-                    if ((stageTime >= cmd_ONE[CurrentAutoState].timeLimit) || (stage_complete)) {
-                        stageTime = 0;
-                        //paddlePower = 0;  //CR Servo
-                        if (CurrentAutoState < (cmd_ONE.length - 1)) {
-                            CurrentAutoState++;
-                        }
-                    }
-                } else {
-                    if ((stageTime >= cmd_NONE[CurrentAutoState].timeLimit) || (stage_complete)) {
-                        stageTime = 0;
-                        //paddlePower = 0;  //CR Servo
-                        if (CurrentAutoState < (cmd_NONE.length - 1)) {
-                            CurrentAutoState++;
-                        }
+                if ((stageTime >= cmd[CurrentAutoState].timeLimit) || (stage_complete)) {
+                    stageTime = 0;
+                    //paddlePower = 0;  //CR Servo
+                    if (CurrentAutoState < (cmd.length - 1)) {
+                        CurrentAutoState++;
                     }
                 }
             }
@@ -385,8 +345,13 @@ public class AutonomousStatesJK2019_color {
              ****************************************************/
             if (CurrentTime - LastMotor > MOTORPERIOD) {
                 LastMotor = CurrentTime;
-                //Have the Drive() class run an update on all of the drive train motors
                 robotDrive.update();
+
+                robot.transportIntake.setPower(intakePower);
+                robot.frontShooter.setPower(shooterPower);
+                robot.backShooter.setPower(shooterPower);
+                robot.wobbleGoalMotor.setPower(0.3);
+                lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
             }
 
             /* ***************************************************
@@ -396,7 +361,7 @@ public class AutonomousStatesJK2019_color {
              ****************************************************/
             if (CurrentTime - LastServo > SERVOPERIOD) {
                 LastServo = CurrentTime;
-
+                robot.ringDefector.setPosition(ringDeflectorPosition);
             }
 
 
@@ -407,51 +372,30 @@ public class AutonomousStatesJK2019_color {
              ****************************************************/
             if (CurrentTime - LastTelemetry > TELEMETRYPERIOD) {
                 LastTelemetry = CurrentTime;
-                if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.FOUR) {
-                    opMode.telemetry.addData("Num Rings Test ", RingStackDetection2.retRings);
-                    opMode.telemetry.addData("Current index: ", CurrentAutoState);
-                    opMode.telemetry.addData("Current State: ", cmd_FOUR[CurrentAutoState].state);
-                    opMode.telemetry.addData("Time Limit   : ", cmd_FOUR[CurrentAutoState].timeLimit);
-                    opMode.telemetry.addData("Value 1      : ", cmd_FOUR[CurrentAutoState].value1);
-                    opMode.telemetry.addData("Value 2      : ", cmd_FOUR[CurrentAutoState].value2);
-                    opMode.telemetry.addData("Value 3      : ", cmd_FOUR[CurrentAutoState].value3);
-                    opMode.telemetry.addData("Value 4      : ", cmd_FOUR[CurrentAutoState].value4);
-                    opMode.telemetry.update();
-                } else if (numRingsTest == org.firstinspires.ftc.teamcode.RingStackDetection2.Rings2.ONE) {
-                    opMode.telemetry.addData("Num Rings Test ", RingStackDetection2.retRings);
-                    opMode.telemetry.addData("Current index: ", CurrentAutoState);
-                    opMode.telemetry.addData("Current State: ", cmd_ONE[CurrentAutoState].state);
-                    opMode.telemetry.addData("Time Limit   : ", cmd_ONE[CurrentAutoState].timeLimit);
-                    opMode.telemetry.addData("Value 1      : ", cmd_ONE[CurrentAutoState].value1);
-                    opMode.telemetry.addData("Value 2      : ", cmd_ONE[CurrentAutoState].value2);
-                    opMode.telemetry.addData("Value 3      : ", cmd_ONE[CurrentAutoState].value3);
-                    opMode.telemetry.addData("Value 4      : ", cmd_ONE[CurrentAutoState].value4);
-                    opMode.telemetry.update();
-                } else {
-                    opMode.telemetry.addData("Color1       : ", currentColor);
-                    opMode.telemetry.addData("Num Rings Test ", RingStackDetection2.retRings);
-                    opMode.telemetry.addData("Current index: ", CurrentAutoState);
-                    opMode.telemetry.addData("Current State: ", cmd_NONE[CurrentAutoState].state);
-                    opMode.telemetry.addData("Time Limit   : ", cmd_NONE[CurrentAutoState].timeLimit);
-                    opMode.telemetry.addData("Value 1      : ", cmd_NONE[CurrentAutoState].value1);
-                    opMode.telemetry.addData("Value 2      : ", cmd_NONE[CurrentAutoState].value2);
-                    opMode.telemetry.addData("Value 3      : ", cmd_NONE[CurrentAutoState].value3);
-                    opMode.telemetry.addData("Value 4      : ", cmd_NONE[CurrentAutoState].value4);
-
-                    opMode.telemetry.update();
-                }
+                opMode.telemetry.addData("Color1       : ", currentColor);
+                opMode.telemetry.addData("WobbleArm    : ", wobbleTarget);
+                opMode.telemetry.addData("Shooter      : ", shooterPower);
+                opMode.telemetry.addData("Intake       : ", intakePower);
+                opMode.telemetry.addData("Current index: ", CurrentAutoState);
+                opMode.telemetry.addData("Current State: ", cmd[CurrentAutoState].state);
+                opMode.telemetry.addData("Time Limit   : ", cmd[CurrentAutoState].timeLimit);
+                opMode.telemetry.addData("Value 1      : ", cmd[CurrentAutoState].value1);
+                opMode.telemetry.addData("Value 2      : ", cmd[CurrentAutoState].value2);
+                opMode.telemetry.addData("Value 3      : ", cmd[CurrentAutoState].value3);
+                opMode.telemetry.addData("Value 4      : ", cmd[CurrentAutoState].value4);
+                opMode.telemetry.update();
             }
         } // end of while opmode is active
-        //opMode.telemetry.addData("Num Rings Test ", RingStackDetection2.retRings);
-        //opMode.telemetry.addData("Path", "Complete");
-        //opMode.telemetry.update();
+
+        opMode.telemetry.addData("Path", "Complete");
+        opMode.telemetry.update();
     }
 
     public static int redCnt = 0;
     public static int blueCnt = 0;
     public static int yellowCnt = 0;
 
-    public static Color DetectColor(int hueIn) {
+    public static AutonomousStatesJK2019.Color DetectColor(int hueIn) {
         final int blueMin = 197; //Blue Starts at 197deg and goes to 217deg.
         final int blueMax = 217;
         final int redMin = 351; //Red Starts at 351deg and wraps around to 11deg.
@@ -460,92 +404,26 @@ public class AutonomousStatesJK2019_color {
         final int yellowMax = 122;
 
 
-        Color detectedColor = Color.ERROR;
+        AutonomousStatesJK2019.Color detectedColor = AutonomousStatesJK2019.Color.ERROR;
 
         //ensure blueCnt,redCnt,yellowCnt are always greater than 0
 
 
         if (hueIn >= blueMin && hueIn <= blueMax) {
-            detectedColor = Color.BLUE;
+            detectedColor = AutonomousStatesJK2019.Color.BLUE;
         }
 
         if (hueIn >= redMin || hueIn <= redMax) //Red is a special value when you consider it with the hue values since it wraps around. So we used "OR" to deterimine instead of &&
         {
-            detectedColor = Color.RED;
+            detectedColor = AutonomousStatesJK2019.Color.RED;
         }
 
         if (hueIn >= yellowMin && hueIn <= yellowMax) {
-            detectedColor = Color.YELLOW;
+            detectedColor = AutonomousStatesJK2019.Color.YELLOW;
         }
 
         return (detectedColor);
     }
-
-
-  /*
-    public static Color DetectColor(int hueIn) {
-        final int blueMin = 220; //Blue Starts at 220deg and goes to 240deg.
-        final int blueMax = 240;
-        final int redMin = 350; //Red Starts at 350deg and wraps around to 10deg.
-        final int redMax = 10;
-        final int yellowMin = 45; //Yellow Starts at 45deg and goes to 65deg
-        final int yellowMax = 65;
-
-        Color detectedColor = Color.ERROR;
-
-        redCnt--;
-        yellowCnt--;
-        blueCnt--;
-
-        //ensure blueCnt,redCnt,yellowCnt are always greater than 0
-
-
-        if (hueIn >= blueMin && hueIn <= blueMax) {
-            blueCnt += 2; //Increment twice because we already decremented
-        }
-
-        if (hueIn >= redMin || hueIn <= redMax) //Red is a special value when you consider it with the hue values since it wraps around. So we used "OR" to deterimine instead of &&
-        {
-            redCnt += 2; //Increment twice because we already decremented
-        }
-
-        if (hueIn >= yellowMin && hueIn <= yellowMax) {
-            yellowCnt += 2; //Increment twice because we already decremented
-        }
-
-        //ensure blueCnt,redCnt,yellowCnt are always less than 5
-        //                IN 65535  OUT IS 5
-        //                    IN 6  OUT IS 5
-        //                    IN 4  OUT IS 4
-        //                    IN 3  OUT IS 3
-        //                    IN 2  OUT IS 2
-        //                    IN 1  OUT IS 1
-        //                    IN 0  OUT IS 0
-        blueCnt = Math.min(blueCnt, 2);
-        redCnt = Math.min(redCnt, 2);
-        yellowCnt = Math.min(yellowCnt, 2);
-        blueCnt = Math.max(blueCnt, 0);
-        redCnt = Math.max(redCnt, 0);
-        yellowCnt = Math.max(yellowCnt, 0);
-
-        //blueCnt = 0 redCnt = 0 yellow = 4
-        if (blueCnt >= 1 && redCnt <= 0 && yellowCnt <= 0) {
-            //System.out.print("Blue is your color");
-            detectedColor = Color.BLUE;
-        } else if (redCnt >= 1 && yellowCnt <= 0 && blueCnt <= 0) {
-            //System.out.print("Red is your color");
-            detectedColor = Color.RED;
-        } else if (yellowCnt >= 1 && blueCnt <= 0 && redCnt <= 0) {
-            //System.out.print("Yellow is your color");
-            detectedColor = Color.YELLOW;
-        } else {
-            //System.out.print("No color detected");
-            detectedColor = Color.NOCOLOR;
-        }
-
-        return (detectedColor);
-
-    } */
 
 
 }
