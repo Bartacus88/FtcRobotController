@@ -274,7 +274,7 @@ public class AutonomousStatesJK2019_color {
                     case SHOOT_RING:
                         //shootRingTime += NAVPERIOD;
                         shooterPower = cmd[CurrentAutoState].value1;
-                        intakePower = 0.0;
+                        intakePower = cmd[CurrentAutoState].value2;
                         ringDeflectorPosition = cmd[CurrentAutoState].value3;
 
                         if (stageTime < FIRE_RING_TIME && stageTime >= SHOOTER_SPOOL_TIME) {
@@ -411,15 +411,13 @@ public class AutonomousStatesJK2019_color {
 
         if (hueIn >= blueMin && hueIn <= blueMax) {
             detectedColor = AutonomousStatesJK2019.Color.BLUE;
-        }
-
-        if (hueIn >= redMin || hueIn <= redMax) //Red is a special value when you consider it with the hue values since it wraps around. So we used "OR" to deterimine instead of &&
+        } else if (hueIn >= redMin || hueIn <= redMax) //Red is a special value when you consider it with the hue values since it wraps around. So we used "OR" to deterimine instead of &&
         {
             detectedColor = AutonomousStatesJK2019.Color.RED;
-        }
-
-        if (hueIn >= yellowMin && hueIn <= yellowMax) {
+        } else if (hueIn >= yellowMin && hueIn <= yellowMax) {
             detectedColor = AutonomousStatesJK2019.Color.YELLOW;
+        } else {
+            detectedColor = AutonomousStatesJK2019.Color.NOCOLOR;
         }
 
         return (detectedColor);

@@ -347,7 +347,8 @@ public class Driver_20_21 extends LinearOpMode {
                 //telemetry.addData("Deploy Target Position ", deploy.getTargetPosition());
                 //telemetry.addData("Position Current Position ", position.getCurrentPosition());
                 //telemetry.addData("Position Target Position ", position.getTargetPosition());
-                telemetry.addData("Position Target Position ", hsvValues[0]);
+                telemetry.addData("HSV Value ", hsvValues[0]);
+                telemetry.addData("Color ", currentColor);
                 //stoneManipulator.displayTarget();
                 //stoneManipulator.displayPlacement();
                 //stoneManipulator.displayActuators();
@@ -383,59 +384,23 @@ public class Driver_20_21 extends LinearOpMode {
 
         Color detectedColor = Color.ERROR;
 
-        redCnt--;
-        yellowCnt--;
-        blueCnt--;
-
         //ensure blueCnt,redCnt,yellowCnt are always greater than 0
 
 
         if (hueIn >= blueMin && hueIn <= blueMax) {
-            blueCnt += 2; //Increment twice because we already decremented
-        }
-
-        if (hueIn >= redMin || hueIn <= redMax) //Red is a special value when you consider it with the hue values since it wraps around. So we used "OR" to deterimine instead of &&
-        {
-            redCnt += 2; //Increment twice because we already decremented
-        }
-
-        if (hueIn >= yellowMin && hueIn <= yellowMax) {
-            yellowCnt += 2; //Increment twice because we already decremented
-        }
-
-        //ensure blueCnt,redCnt,yellowCnt are always less than 5
-        //                IN 65535  OUT IS 5
-        //                    IN 6  OUT IS 5
-        //                    IN 4  OUT IS 4
-        //                    IN 3  OUT IS 3
-        //                    IN 2  OUT IS 2
-        //                    IN 1  OUT IS 1
-        //                    IN 0  OUT IS 0
-        blueCnt = Math.min(blueCnt, 5);
-        redCnt = Math.min(redCnt, 5);
-        yellowCnt = Math.min(yellowCnt, 5);
-        blueCnt = Math.max(blueCnt, 0);
-        redCnt = Math.max(redCnt, 0);
-        yellowCnt = Math.max(yellowCnt, 0);
-
-        //blueCnt = 0 redCnt = 0 yellow = 4
-        if (blueCnt >= 3 && redCnt <= 2 && yellowCnt <= 2) {
-            //System.out.print("Blue is your color");
             detectedColor = Color.BLUE;
-        } else if (redCnt >= 3 && yellowCnt <= 2 && blueCnt <= 2) {
-            //System.out.print("Red is your color");
+        } else if (hueIn >= redMin || hueIn <= redMax) //Red is a special value when you consider it with the hue values since it wraps around. So we used "OR" to deterimine instead of &&
+        {
             detectedColor = Color.RED;
-        } else if (yellowCnt >= 3 && blueCnt <= 2 && redCnt <= 2) {
-            //System.out.print("Yellow is your color");
+        } else if (hueIn >= yellowMin && hueIn <= yellowMax) {
             detectedColor = Color.YELLOW;
         } else {
-            //System.out.print("No color detected");
             detectedColor = Color.NOCOLOR;
         }
 
         return (detectedColor);
-
     }
+
 }
 
 

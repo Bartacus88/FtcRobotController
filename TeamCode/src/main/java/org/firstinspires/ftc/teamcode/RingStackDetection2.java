@@ -176,8 +176,8 @@ public class RingStackDetection2 {
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         //Comment/uncomment the next two lines for an external webcam vs a phones back camera.
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        //parameters.cameraName = myOpMode.hardwareMap.get(WebcamName.class, "Webcam 1");
+        // parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        parameters.cameraName = myOpMode.hardwareMap.get(WebcamName.class, "Webcam 1");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
