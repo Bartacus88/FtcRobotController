@@ -99,7 +99,7 @@ import java.util.List;
 public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
 
     //Define Robot Hardware and classes here
-    private HardwareDef_Bart_20_21 robot = new HardwareDef_Bart_20_21();
+    private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive = new Drive();
     LinearActuator lineAct = new LinearActuator();
 
@@ -144,7 +144,7 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
 
     public void runOpMode() {
 
-        HardwareDef_Bart_20_21.STATUS retVal;
+        HardwareDef_20_21.STATUS retVal;
         /*
          * Initialize all of the robot hardware.
          * The init() method of the hardware class does all the work here

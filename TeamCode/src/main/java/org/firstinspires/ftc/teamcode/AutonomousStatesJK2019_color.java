@@ -104,7 +104,7 @@ public class AutonomousStatesJK2019_color {
     }
 
     float hsvValues[] = {0F, 0F, 0F};
-    AutonomousStatesJK2019.Color currentColor = AutonomousStatesJK2019.Color.ERROR;
+    Color currentColor = Color.ERROR;
 
     public void runOpMode(LinearOpMode opMode, HardwareMap hardwareMap, AutoCommand cmd[]) {
 
@@ -253,7 +253,7 @@ public class AutonomousStatesJK2019_color {
                         }
                         break;
                     case MOVE_COLOR:
-                        if (currentColor == AutonomousStatesJK2019.Color.YELLOW) {
+                        if (currentColor == Color.YELLOW) {
                             robotDrive.move(Drive.MoveType.STOP, 0, 0);
                             stage_complete = true;
                         } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
@@ -395,7 +395,7 @@ public class AutonomousStatesJK2019_color {
     public static int blueCnt = 0;
     public static int yellowCnt = 0;
 
-    public static AutonomousStatesJK2019.Color DetectColor(int hueIn) {
+    public static Color DetectColor(int hueIn) {
         final int blueMin = 197; //Blue Starts at 197deg and goes to 217deg.
         final int blueMax = 217;
         final int redMin = 351; //Red Starts at 351deg and wraps around to 11deg.
@@ -404,20 +404,20 @@ public class AutonomousStatesJK2019_color {
         final int yellowMax = 122;
 
 
-        AutonomousStatesJK2019.Color detectedColor = AutonomousStatesJK2019.Color.ERROR;
+        Color detectedColor = Color.ERROR;
 
         //ensure blueCnt,redCnt,yellowCnt are always greater than 0
 
 
         if (hueIn >= blueMin && hueIn <= blueMax) {
-            detectedColor = AutonomousStatesJK2019.Color.BLUE;
+            detectedColor = Color.BLUE;
         } else if (hueIn >= redMin || hueIn <= redMax) //Red is a special value when you consider it with the hue values since it wraps around. So we used "OR" to deterimine instead of &&
         {
-            detectedColor = AutonomousStatesJK2019.Color.RED;
+            detectedColor = Color.RED;
         } else if (hueIn >= yellowMin && hueIn <= yellowMax) {
-            detectedColor = AutonomousStatesJK2019.Color.YELLOW;
+            detectedColor = Color.YELLOW;
         } else {
-            detectedColor = AutonomousStatesJK2019.Color.NOCOLOR;
+            detectedColor = Color.NOCOLOR;
         }
 
         return (detectedColor);
