@@ -74,15 +74,58 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+
 
 public class AutonomousStatesJK2019_color {
     //Define Robot Hardware and classes here
-    private HardwareDef_20_21 robot = new HardwareDef_20_21();
+    private HardwareDef_Bart_20_21 robot = new HardwareDef_Bart_20_21();
     private Drive robotDrive = new Drive();
-    LinearActuator lineAct = new LinearActuator();
+    //LinearActuator lineAct = new LinearActuator();
 
     //Define all of the available states for AutoState.   Add new states before PAUSE
     public enum AutoStates {MOVE, PAUSE, SHOOT_RING, MOVE_COLOR, MOVE_WOBBLE_ARM, WAIT;}
+
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+    private static final boolean PHONE_IS_PORTRAIT = false;
+    private static final String VUFORIA_KEY =
+            "Afsw2oP/////AAABmfzepGuVnkr3uHCSQlCl89hgf8A+n9yEsMhH8pfA7Ttz/JfeOCGHzGmHjZMt0IHzaR5tUbVK4L59qd0RJsjAfrmrCsu/CDMm90dy3T9+eRo+zlw6aGRHD0j3EhngUWY0dc1PrRZpWXa+KCLOy3rtB+aWaZDBxILq6uCiqRtLGUwBTrDGQVH/fE1z32YZbDISS5F6actiiu9RhSyU8DKn1EEWeuTj0W+O7lAoDUIhJfJ0B0Iqk73Gfuv2ytbUq89obq9ZVMUqjq9rFsYiztVPOXQkWZsnv8P+eN/0XEgDUmQCU4XBABUw7bTsn9WW/xMDyqnuUMy+AbD/ag5+EPpQaAEGa9nT6n/ATK/Znu47ZlAe";
+    // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
+    // We will define some constants and conversions here
+    private static final float mmPerInch = 25.4f;
+    private static final float mmTargetHeight = (6) * mmPerInch;          // the height of the center of the target image above the floor
+
+    // Constants for perimeter targets
+    private static final float halfField = 72 * mmPerInch;
+    private static final float quadField = 36 * mmPerInch;
+    private float posX = -60;
+    private float posH = 0;
+    private float posY = 0;
+
+    // Class Members
+    private OpenGLMatrix lastLocation = null;
+    private VuforiaLocalizer vuforia = null;
+    private boolean targetVisible = false;
+    private float phoneXRotate = 0;
+    private float phoneYRotate = 0;
+    private float phoneZRotate = 0;
 
 
     //Define AutoState run intervals here
@@ -108,7 +151,7 @@ public class AutonomousStatesJK2019_color {
 
     public void runOpMode(LinearOpMode opMode, HardwareMap hardwareMap, AutoCommand cmd[]) {
 
-        HardwareDef_20_21.STATUS retVal;
+        HardwareDef_Bart_20_21.STATUS retVal;
         /*
          * Initialize all of the robot hardware.
          * The init() method of the hardware class does all the work here
@@ -192,11 +235,11 @@ public class AutonomousStatesJK2019_color {
         double shooterPower = 0.0;
         double intakePower = 0.0;
         double ringDeflectorPosition = 0.0;
-        robot.backShooter.setPower(0);
-        robot.frontShooter.setPower(0);
-        robot.transportIntake.setPower(0);
-        robot.wobbleGoalMotor.setTargetPosition(0); //Must state that our initial position is refered to as "0" or the "datum"
-        lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1, 1440, 1, opMode, true);
+//        robot.backShooter.setPower(0);
+//        robot.frontShooter.setPower(0);
+//        robot.transportIntake.setPower(0);
+//        robot.wobbleGoalMotor.setTargetPosition(0); //Must state that our initial position is refered to as "0" or the "datum"
+//        lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1, 1440, 1, opMode, true);
 
         //long shootRingTime = 0;
         final long FIRE_RING_TIME = 10 * NAVPERIOD;
@@ -204,6 +247,111 @@ public class AutonomousStatesJK2019_color {
         //final long SHOOT_RING_MAX_TIME = 25 * NAVPERIOD;
 
         double wobbleTarget = 0.0;
+
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
+         * If no camera monitor is desired, use the parameter-less constructor instead (commented out below).
+         */
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
+        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = CAMERA_CHOICE;
+        //Comment/uncomment the next line for an external webcam vs a phones back camera.
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+        // Make sure extended tracking is disabled for this example.
+        parameters.useExtendedTracking = false;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Load the data sets for the trackable objects. These particular data
+        // sets are stored in the 'assets' part of our application.
+        VuforiaTrackables targetsUltimateGoal = this.vuforia.loadTrackablesFromAsset("UltimateGoal");
+        VuforiaTrackable blueTowerGoalTarget = targetsUltimateGoal.get(0);
+        blueTowerGoalTarget.setName("Blue Tower Goal Target");
+        VuforiaTrackable redTowerGoalTarget = targetsUltimateGoal.get(1);
+        redTowerGoalTarget.setName("Red Tower Goal Target");
+        VuforiaTrackable redAllianceTarget = targetsUltimateGoal.get(2);
+        redAllianceTarget.setName("Red Alliance Target");
+        VuforiaTrackable blueAllianceTarget = targetsUltimateGoal.get(3);
+        blueAllianceTarget.setName("Blue Alliance Target");
+        VuforiaTrackable frontWallTarget = targetsUltimateGoal.get(4);
+        frontWallTarget.setName("Front Wall Target");
+
+        // For convenience, gather together all the trackable objects in one easily-iterable collection */
+        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+        allTrackables.addAll(targetsUltimateGoal);
+
+        /**
+         * In order for localization to work, we need to tell the system where each target is on the field, and
+         * where the phone resides on the robot.  These specifications are in the form of <em>transformation matrices.</em>
+         * Transformation matrices are a central, important concept in the math here involved in localization.
+         * See <a href="https://en.wikipedia.org/wiki/Transformation_matrix">Transformation Matrix</a>
+         * for detailed information. Commonly, you'll encounter transformation matrices as instances
+         * of the {@link OpenGLMatrix} class.
+         *
+         * If you are standing in the Red Alliance Station looking towards the center of the field,
+         *     - The X axis runs from your left to the right. (positive from the center to the right)
+         *     - The Y axis runs from the Red Alliance Station towards the other side of the field
+         *       where the Blue Alliance Station is. (Positive is from the center, towards the BlueAlliance station)
+         *     - The Z axis runs from the floor, upwards towards the ceiling.  (Positive is above the floor)
+         *
+         * Before being transformed, each target image is conceptually located at the origin of the field's
+         *  coordinate system (the center of the field), facing up.
+         */
+
+        //Set the position of the perimeter targets with relation to origin (center of field)
+        redAllianceTarget.setLocation(OpenGLMatrix
+                .translation(0, -halfField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
+
+        blueAllianceTarget.setLocation(OpenGLMatrix
+                .translation(0, halfField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
+        frontWallTarget.setLocation(OpenGLMatrix
+                .translation(-halfField, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
+
+        // The tower goal targets are located a quarter field length from the ends of the back perimeter wall.
+        blueTowerGoalTarget.setLocation(OpenGLMatrix
+                .translation(halfField, quadField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
+        redTowerGoalTarget.setLocation(OpenGLMatrix
+                .translation(halfField, -quadField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
+
+
+        // We need to rotate the camera around it's long axis to bring the correct camera forward.
+        if (CAMERA_CHOICE == BACK) {
+            phoneYRotate = -90;
+        } else {
+            phoneYRotate = 90;
+        }
+
+        // Rotate the phone vertical about the X axis if it's in portrait mode
+        if (PHONE_IS_PORTRAIT) {
+            phoneXRotate = 90;
+        }
+
+        // Next, translate the camera lens to where it is on the robot.
+        // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
+        final float CAMERA_FORWARD_DISPLACEMENT = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
+        final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
+        final float CAMERA_LEFT_DISPLACEMENT = 0;     // eg: Camera is ON the robot's center line
+
+        OpenGLMatrix robotFromCamera = OpenGLMatrix
+                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
+
+        /**  Let all the trackable listeners know where the phone is.  */
+        for (VuforiaTrackable trackable : allTrackables) {
+            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
+        }
 
         opMode.waitForStart();
         runtime.reset();
@@ -226,6 +374,42 @@ public class AutonomousStatesJK2019_color {
                 LastSensor = CurrentTime;
                 android.graphics.Color.RGBToHSV(robot.color1.red() * 8, robot.color1.green() * 8, robot.color1.blue() * 8, hsvValues);
                 currentColor = DetectColor((int) hsvValues[0]);
+
+
+                //Below is Vuforia
+                targetsUltimateGoal.activate();
+                // check all the trackable targets to see which one (if any) is visible.
+                targetVisible = false;
+                for (VuforiaTrackable trackable : allTrackables) {
+                    if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+                        //telemetry.addData("Visible Target", trackable.getName());
+                        targetVisible = true;
+
+                        // getUpdatedRobotLocation() will return null if no new information is available since
+                        // the last time that call was made, or if the trackable is not currently visible.
+                        OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+                        if (robotLocationTransform != null) {
+                            lastLocation = robotLocationTransform;
+                        }
+                        break;
+                    }
+                }
+                // Provide feedback as to where the robot is located (if we know).
+                if (targetVisible) {
+                    // express position (translation) of robot in inches.
+                    VectorF translation = lastLocation.getTranslation();
+                    //telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f", translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
+                    posY = translation.get(1) / mmPerInch;
+                    posX = translation.get(0) / mmPerInch;
+                    // express the rotation of the robot in degrees.
+                    Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+                    posH = rotation.thirdAngle;
+
+                    //telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+                } else {
+                    //telemetry.addData("Visible Target", "none");
+                    //robotDrive.move(Drive.MoveType.STOP, 0, 0); //We dont know where we are so dont do anything.
+                }
             }
 
 
@@ -317,6 +501,51 @@ public class AutonomousStatesJK2019_color {
                             */
 
                     // Same call, have two to make autonomous code easier to read
+                    case MOVE_CAMERA_X:
+                        if (posX > cmd[CurrentAutoState].value3 && cmd[CurrentAutoState].value4 == 0) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        } else if (posX < cmd[CurrentAutoState].value3 && cmd[CurrentAutoState].value4 > 0) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                            robotDrive.move(cmd[CurrentAutoState].moveType, (int) cmd[CurrentAutoState].value1, cmd[CurrentAutoState].value2);
+                        }
+                        if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        }
+                        break;
+                    case MOVE_CAMERA_Y:
+                        if (posY > cmd[CurrentAutoState].value3 && cmd[CurrentAutoState].value4 == 0) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        } else if (posY < cmd[CurrentAutoState].value3 && cmd[CurrentAutoState].value4 > 0) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                            robotDrive.move(cmd[CurrentAutoState].moveType, (int) cmd[CurrentAutoState].value1, cmd[CurrentAutoState].value2);
+                        }
+                        if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        }
+                        break;
+                    case MOVE_CAMERA_H:
+                        if (posH > cmd[CurrentAutoState].value1 && cmd[CurrentAutoState].value4 == 0) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        } else if (posH < cmd[CurrentAutoState].value1 && cmd[CurrentAutoState].value4 > 0) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                            robotDrive.move(cmd[CurrentAutoState].moveType, (int) cmd[CurrentAutoState].value1, cmd[CurrentAutoState].value2);
+                        }
+                        if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        }
+                        break;
                     case PAUSE:
                     case WAIT:
                     default:
@@ -347,11 +576,11 @@ public class AutonomousStatesJK2019_color {
                 LastMotor = CurrentTime;
                 robotDrive.update();
 
-                robot.transportIntake.setPower(intakePower);
-                robot.frontShooter.setPower(shooterPower);
-                robot.backShooter.setPower(shooterPower);
-                robot.wobbleGoalMotor.setPower(0.3);
-                lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
+//                robot.transportIntake.setPower(intakePower);
+//                robot.frontShooter.setPower(shooterPower);
+//                robot.backShooter.setPower(shooterPower);
+//                robot.wobbleGoalMotor.setPower(0.3);
+//                lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
             }
 
             /* ***************************************************
