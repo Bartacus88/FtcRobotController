@@ -178,9 +178,9 @@ public class Drive {
         public double         motorRatio     = 28;
         public double         gearRatio      = 40;
         public double         wheelDiameter  = 2.5;
-        public double         mecanumAngle   = 45;
-        public PivotTolerance pivotTolerance = PivotTolerance.ONE_DEGREE;
-        public double         turnBackoff    = 0.05;
+        public double mecanumAngle = 45;
+        public PivotTolerance pivotTolerance = PivotTolerance.FIVE_DEGREES;
+        public double turnBackoff = 0.05;
         public double         backoffMultiplier = 3;
         public int            encoderTolerance = 15;
         public double         minStartPower  = 0.3;

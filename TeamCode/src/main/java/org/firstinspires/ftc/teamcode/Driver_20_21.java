@@ -378,8 +378,8 @@ public class Driver_20_21 extends LinearOpMode {
         final int blueMax = 217;
         final int redMin = 351; //Red Starts at 351deg and wraps around to 11deg.
         final int redMax = 11;
-        final int yellowMin = 102; //Yellow Starts at 102deg and goes to 122deg. Although we want white, we named this yellow.
-        final int yellowMax = 122;
+        final int yellowMin = 141; //Yellow Starts at 102deg and goes to 122deg. Although we want white, we named this yellow.
+        final int yellowMax = 165;
 
 
         Color detectedColor = Color.ERROR;

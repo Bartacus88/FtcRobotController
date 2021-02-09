@@ -103,7 +103,7 @@ public class AutonomousStates {
 
 
     //Define all of the available states for AutoState.   Add new states before PAUSE
-    public enum AutoStates {MOVE, RAISELIFT, LOWERLIFT, GOLD_DETECT, PIVOT_ARM, RAIL_CASCADE, MOVE_COLOR, SHOOT_RING, MOVE_WOBBLE_ARM, OPEN_CV, PAUSE, WAIT;}
+    public enum AutoStates {MOVE, RAISELIFT, LOWERLIFT, GOLD_DETECT, PIVOT_ARM, RAIL_CASCADE, MOVE_COLOR, SHOOT_RING, MOVE_WOBBLE_ARM, PAUSE, WAIT;}
 
 
     //Define AutoState run intervals here
