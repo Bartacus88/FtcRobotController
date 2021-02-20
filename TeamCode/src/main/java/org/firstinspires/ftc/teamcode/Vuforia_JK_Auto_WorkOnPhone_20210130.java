@@ -67,45 +67,74 @@ package org.firstinspires.ftc.teamcode;
  */
 
 
+import android.os.SystemClock;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
+import java.util.ArrayList;
 import java.util.List;
 
-//openCV needed
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
-
-@Autonomous(name = "JK Auto Vuforia BART", group = "Pushbot")
+@Autonomous(name = "JK Auto Vuforia TF and Pos", group = "Pushbot")
 @SuppressWarnings("WeakerAccess")
 public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
-
     //Define Robot Hardware and classes here
     private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive = new Drive();
     LinearActuator lineAct = new LinearActuator();
 
-    //Vuforia needed
+    //Define all of the available states for AutoState.   Add new states before PAUSE
+    public enum AutoStates {MOVE, RAISELIFT, LOWERLIFT, RING_DETECT, PIVOT_ARM, RAIL_CASCADE, MOVE_COLOR, SHOOT_RING, MOVE_WOBBLE_ARM, MOVE_CAMERA_Y, MOVE_CAMERA_H, MOVE_CAMERA_X, PAUSE, WAIT;}
+
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
 
-    public enum Rings2 {NONE, ONE, FOUR;}
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+    private static final boolean PHONE_IS_PORTRAIT = false;
+    private static final String VUFORIA_KEY =
+            "Afsw2oP/////AAABmfzepGuVnkr3uHCSQlCl89hgf8A+n9yEsMhH8pfA7Ttz/JfeOCGHzGmHjZMt0IHzaR5tUbVK4L59qd0RJsjAfrmrCsu/CDMm90dy3T9+eRo+zlw6aGRHD0j3EhngUWY0dc1PrRZpWXa+KCLOy3rtB+aWaZDBxILq6uCiqRtLGUwBTrDGQVH/fE1z32YZbDISS5F6actiiu9RhSyU8DKn1EEWeuTj0W+O7lAoDUIhJfJ0B0Iqk73Gfuv2ytbUq89obq9ZVMUqjq9rFsYiztVPOXQkWZsnv8P+eN/0XEgDUmQCU4XBABUw7bTsn9WW/xMDyqnuUMy+AbD/ag5+EPpQaAEGa9nT6n/ATK/Znu47ZlAe";
+    // Since ImageTarget trackables use mm to specifiy their dimensions, we must use mm for all the physical dimension.
+    // We will define some constants and conversions here
+    private static final float mmPerInch = 25.4f;
+    private static final float mmTargetHeight = (6) * mmPerInch;          // the height of the center of the target image above the floor
 
-    public Rings2 retRings = Rings2.NONE;
-    public static final String VUFORIA_KEY = "Afsw2oP/////AAABmfzepGuVnkr3uHCSQlCl89hgf8A+n9yEsMhH8pfA7Ttz/JfeOCGHzGmHjZMt0IHzaR5tUbVK4L59qd0RJsjAfrmrCsu/CDMm90dy3T9+eRo+zlw6aGRHD0j3EhngUWY0dc1PrRZpWXa+KCLOy3rtB+aWaZDBxILq6uCiqRtLGUwBTrDGQVH/fE1z32YZbDISS5F6actiiu9RhSyU8DKn1EEWeuTj0W+O7lAoDUIhJfJ0B0Iqk73Gfuv2ytbUq89obq9ZVMUqjq9rFsYiztVPOXQkWZsnv8P+eN/0XEgDUmQCU4XBABUw7bTsn9WW/xMDyqnuUMy+AbD/ag5+EPpQaAEGa9nT6n/ATK/Znu47ZlAe";
-    private VuforiaLocalizer vuforia;
+    // Constants for perimeter targets
+    private static final float halfField = 72 * mmPerInch;
+    private static final float quadField = 36 * mmPerInch;
+    private float posX = -60;
+    private float posH = 0;
+    private float posY = 0;
+
+    // Class Members
+    private OpenGLMatrix lastLocation = null;
+    private VuforiaLocalizer vuforia = null;
+    private boolean targetVisible = false;
+    private float phoneXRotate = 0;
+    private float phoneYRotate = 0;
+    private float phoneZRotate = 0;
     private TFObjectDetector tfod;
-
-    //Define all of the available states for AutoState.   Add new states before PAUSE
-    public enum AutoStates {MOVE, PAUSE, SHOOT_RING, MOVE_COLOR, MOVE_WOBBLE_ARM, OPEN_CV, WAIT;}
 
 
     //Define AutoState run intervals here
@@ -127,12 +156,20 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
     }
 
     float hsvValues[] = {0F, 0F, 0F};
-    Color currentColor = Color.ERROR;
-
+    AutonomousStatesJK2019.Color currentColor = AutonomousStatesJK2019.Color.ERROR;
     int numRings = 5;
 
-    public void runOpMode() {
+    public enum Rings2 {NONE, ONE, FOUR;}
 
+    public Rings2 retRings = Rings2.NONE;
+
+    AutoCommand cmd[] = new AutoCommand[15];
+
+
+    public void runOpMode() {
+        cmd[0] = new AutoCommand(AutonomousStates.AutoStates.RING_DETECT, Drive.MoveType.CRABLEFT, 5, 0.3, 0, 0, 2000);
+        cmd[1] = new AutoCommand(AutonomousStates.AutoStates.RING_DETECT, Drive.MoveType.CRABRIGHT, 5, 0.3, 0, 0, 1000);
+        cmd[2] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 1, 0.1, 0, 0, 1000);
         HardwareDef_20_21.STATUS retVal;
         /*
          * Initialize all of the robot hardware.
@@ -184,13 +221,13 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
             telemetry.addData("Status   ", "INITIALIZATION FAILED!!!!!");
         }
 
-        AutoCommand cmd[] = new AutoCommand[15];
 
         /*
          * Perform a little range checking on the supplied array of states.  Look to see if
          * the autonomous time limit will be exceeded
-
-        int i = 0, t = 0;
+         */
+      /*  Range checking will not work here since we are decideing on the array below.
+      int i = 0, t = 0;
         while (i < cmd.length) {
             t += cmd[i].timeLimit;
             i++;
@@ -201,8 +238,8 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
             opMode.telemetry.addData("   Actual ", t);
         }
         opMode.telemetry.update();
-        opMode.telemetry.setAutoClear(true);
-*/
+        opMode.telemetry.setAutoClear(true);*/
+
 
         /*
          * Define and initialize all of the loop timing variables
@@ -218,11 +255,11 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
         double shooterPower = 0.0;
         double intakePower = 0.0;
         double ringDeflectorPosition = 0.0;
-        //robot.backShooter.setPower(0);
-        //robot.frontShooter.setPower(0);
-        //robot.transportIntake.setPower(0);
-        //robot.wobbleGoalMotor.setTargetPosition(0); //Must state that our initial position is refered to as "0" or the "datum"
-        //lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1, 1440, 1, opMode, true);
+        robot.backShooter.setPower(0);
+        robot.frontShooter.setPower(0);
+        robot.transportIntake.setPower(0);
+        robot.wobbleGoalMotor.setTargetPosition(0); //Must state that our initial position is refered to as "0" or the "datum"
+        lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1, 1440, 1, this, true);
 
         //long shootRingTime = 0;
         final long FIRE_RING_TIME = 10 * NAVPERIOD;
@@ -231,9 +268,117 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
 
         double wobbleTarget = 0.0;
 
-        //Vuforia Needed
-        initVuforia();
-        initTfod();
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
+         * If no camera monitor is desired, use the parameter-less constructor instead (commented out below).
+         */
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
+        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = CAMERA_CHOICE;
+        //Comment/uncomment the next line for an external webcam vs a phones back camera.
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+
+        // Make sure extended tracking is disabled for this example.
+        parameters.useExtendedTracking = false;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Load the data sets for the trackable objects. These particular data
+        // sets are stored in the 'assets' part of our application.
+        VuforiaTrackables targetsUltimateGoal = this.vuforia.loadTrackablesFromAsset("UltimateGoal");
+        VuforiaTrackable blueTowerGoalTarget = targetsUltimateGoal.get(0);
+        blueTowerGoalTarget.setName("Blue Tower Goal Target");
+        VuforiaTrackable redTowerGoalTarget = targetsUltimateGoal.get(1);
+        redTowerGoalTarget.setName("Red Tower Goal Target");
+        VuforiaTrackable redAllianceTarget = targetsUltimateGoal.get(2);
+        redAllianceTarget.setName("Red Alliance Target");
+        VuforiaTrackable blueAllianceTarget = targetsUltimateGoal.get(3);
+        blueAllianceTarget.setName("Blue Alliance Target");
+        VuforiaTrackable frontWallTarget = targetsUltimateGoal.get(4);
+        frontWallTarget.setName("Front Wall Target");
+
+        // For convenience, gather together all the trackable objects in one easily-iterable collection */
+        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+        allTrackables.addAll(targetsUltimateGoal);
+
+        /**
+         * In order for localization to work, we need to tell the system where each target is on the field, and
+         * where the phone resides on the robot.  These specifications are in the form of <em>transformation matrices.</em>
+         * Transformation matrices are a central, important concept in the math here involved in localization.
+         * See <a href="https://en.wikipedia.org/wiki/Transformation_matrix">Transformation Matrix</a>
+         * for detailed information. Commonly, you'll encounter transformation matrices as instances
+         * of the {@link OpenGLMatrix} class.
+         *
+         * If you are standing in the Red Alliance Station looking towards the center of the field,
+         *     - The X axis runs from your left to the right. (positive from the center to the right)
+         *     - The Y axis runs from the Red Alliance Station towards the other side of the field
+         *       where the Blue Alliance Station is. (Positive is from the center, towards the BlueAlliance station)
+         *     - The Z axis runs from the floor, upwards towards the ceiling.  (Positive is above the floor)
+         *
+         * Before being transformed, each target image is conceptually located at the origin of the field's
+         *  coordinate system (the center of the field), facing up.
+         */
+
+        //Set the position of the perimeter targets with relation to origin (center of field)
+        redAllianceTarget.setLocation(OpenGLMatrix
+                .translation(0, -halfField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180)));
+
+        blueAllianceTarget.setLocation(OpenGLMatrix
+                .translation(0, halfField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0)));
+        frontWallTarget.setLocation(OpenGLMatrix
+                .translation(-halfField, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 90)));
+
+        // The tower goal targets are located a quarter field length from the ends of the back perimeter wall.
+        blueTowerGoalTarget.setLocation(OpenGLMatrix
+                .translation(halfField, quadField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
+        redTowerGoalTarget.setLocation(OpenGLMatrix
+                .translation(halfField, -quadField, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90)));
+
+
+        // We need to rotate the camera around it's long axis to bring the correct camera forward.
+        if (CAMERA_CHOICE == BACK) {
+            phoneYRotate = -90;
+        } else {
+            phoneYRotate = 90;
+        }
+
+        // Rotate the phone vertical about the X axis if it's in portrait mode
+        if (PHONE_IS_PORTRAIT) {
+            phoneXRotate = 90;
+        }
+
+        // Next, translate the camera lens to where it is on the robot.
+        // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
+        final float CAMERA_FORWARD_DISPLACEMENT = 4.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
+        final float CAMERA_VERTICAL_DISPLACEMENT = 8.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
+        final float CAMERA_LEFT_DISPLACEMENT = 0;     // eg: Camera is ON the robot's center line
+
+        OpenGLMatrix robotFromCamera = OpenGLMatrix
+                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES, phoneYRotate, phoneZRotate, phoneXRotate));
+
+        /**  Let all the trackable listeners know where the phone is.  */
+        for (VuforiaTrackable trackable : allTrackables) {
+            ((VuforiaTrackableDefaultListener) trackable.getListener()).setPhoneInformation(robotFromCamera, parameters.cameraDirection);
+        }
+
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
         if (tfod != null) {
             tfod.activate();
         }
@@ -248,95 +393,6 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
         while (opModeIsActive()) {
             CurrentTime = System.currentTimeMillis();
 
-            if (tfod != null) {
-                // getUpdatedRecognitions() will return null if no new information is available since
-                // the last time that call was made.
-                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null) {
-                    //myOpMode.telemetry.clear();
-                    //myOpMode.telemetry.addData("# Object Detected", updatedRecognitions.size());
-                    // step through the list of recognitions and display boundary info.
-                    int i = 0;
-                    for (Recognition recognition : updatedRecognitions) {
-                        //myOpMode.telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                        //myOpMode.telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f", recognition.getLeft(), recognition.getTop());
-                        //myOpMode.telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",recognition.getRight(), recognition.getBottom());
-                        if (i == 0 && recognition.getLabel() == "Single") {
-                            retRings = Rings2.ONE;
-                        }
-                        if (i == 0 && recognition.getLabel() == "Quad") {
-                            retRings = Rings2.FOUR;
-
-                        }
-                    }
-                    //myOpMode.telemetry.addData("RetRings: ", retRings);
-                    //myOpMode.telemetry.update();
-                }
-            }
-
-
-            if (tfod != null) {
-                tfod.shutdown();
-            }
-
-            if (numRings >= 5) { //Default is 5.  The below code will change to a number less than 5 allowing this section to only run once.
-                if (retRings == Rings2.FOUR) {
-                    cmd[0] = new AutoCommand(AutonomousStates.AutoStates.MOVE_COLOR, Drive.MoveType.CRABRIGHT, 8, 0.4, 0, 0, 6000);
-                    cmd[1] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 8, 0.4, 0, 0, 1000);
-                    cmd[2] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 8, 0.4, 0, 0, 1000);
-                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
-                    cmd[4] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
-                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
-                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
-                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
-                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
-                    cmd[9] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[11] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[12] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[13] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[14] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
-                    numRings = 4;
-                } else if (retRings == Rings2.ONE) {
-                    cmd[0] = new AutoCommand(AutonomousStates.AutoStates.MOVE_COLOR, Drive.MoveType.CRABRIGHT, 80, 0.4, 0, 0, 6000);
-                    cmd[1] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 8, 0.4, 0, 0, 1000);
-                    cmd[2] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 8, 0.4, 0, 0, 1000);
-                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
-                    cmd[4] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
-                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
-                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
-                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
-                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
-                    cmd[9] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[11] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[12] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[13] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[14] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
-                    numRings = 1;
-                } else {
-                    cmd[0] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 8, 0.4, 0, 0, 1000);
-                    cmd[1] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 8, 0.4, 0, 0, 1000);
-                    cmd[2] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 30, 0.4, 0, 0, 5000);
-                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 11, 0.4, 0, 0, 1000);
-                    //for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
-                    cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.08, 0, 0, 0, 2000);
-                    //for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
-                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0, 0, 0, 0, 2000);
-                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 12, 0.4, 0, 0, 1000);
-                    //for SHOOT_RING State Value 1 = Shooter Power, Value 2 = Intake Power, Value 3 = Ring deflector Position.
-                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.SHOOT_RING, Drive.MoveType.REVERSE, .80, .85, 1.0, 0, 2000);
-                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 7, 0.4, 0, 0, 5000);
-                    cmd[9] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[11] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[12] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[13] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
-                    cmd[14] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
-                    numRings = 0;
-                }
-            }
-
 
             /* *******************************************************************
              *                SENSORS
@@ -348,6 +404,41 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                 LastSensor = CurrentTime;
                 android.graphics.Color.RGBToHSV(robot.color1.red() * 8, robot.color1.green() * 8, robot.color1.blue() * 8, hsvValues);
                 currentColor = DetectColor((int) hsvValues[0]);
+
+                //Below is Vuforia
+                targetsUltimateGoal.activate();
+                // check all the trackable targets to see which one (if any) is visible.
+                targetVisible = false;
+                for (VuforiaTrackable trackable : allTrackables) {
+                    if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+                        //telemetry.addData("Visible Target", trackable.getName());
+                        targetVisible = true;
+
+                        // getUpdatedRobotLocation() will return null if no new information is available since
+                        // the last time that call was made, or if the trackable is not currently visible.
+                        OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+                        if (robotLocationTransform != null) {
+                            lastLocation = robotLocationTransform;
+                        }
+                        break;
+                    }
+                }
+                // Provide feedback as to where the robot is located (if we know).
+                if (targetVisible) {
+                    // express position (translation) of robot in inches.
+                    VectorF translation = lastLocation.getTranslation();
+                    //telemetry.addData("Pos (in)", "{X, Y, Z} = %.1f, %.1f, %.1f", translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
+                    posY = translation.get(1) / mmPerInch;
+                    posX = translation.get(0) / mmPerInch;
+                    // express the rotation of the robot in degrees.
+                    Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+                    posH = rotation.thirdAngle;
+
+                    //telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+                } else {
+                    //telemetry.addData("Visible Target", "none");
+                    //robotDrive.move(Drive.MoveType.STOP, 0, 0); //We dont know where we are so dont do anything.
+                }
             }
 
 
@@ -365,6 +456,83 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                 stageTime += NAVPERIOD;
 
                 switch (cmd[CurrentAutoState].state) {
+                    case RING_DETECT:
+                        //I really wanted to make this work with the setup that Howard and Jim made but I could not get it to compile
+                        //below is TF
+                        if (tfod != null) {
+                            // getUpdatedRecognitions() will return null if no new information is available since
+                            // the last time that call was made.
+                            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                            if (updatedRecognitions != null) {
+                                //myOpMode.telemetry.clear();
+                                //myOpMode.telemetry.addData("# Object Detected", updatedRecognitions.size());
+                                // step through the list of recognitions and display boundary info.
+                                int j = 0;
+                                for (Recognition recognition : updatedRecognitions) {
+                                    //myOpMode.telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                                    //myOpMode.telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f", recognition.getLeft(), recognition.getTop());
+                                    //myOpMode.telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",recognition.getRight(), recognition.getBottom());
+                                    if (j == 0 && recognition.getLabel() == "Single") {
+                                        retRings = Rings2.ONE;
+                                    }
+                                    if (j == 0 && recognition.getLabel() == "Quad") {
+                                        retRings = Rings2.FOUR;
+
+                                    }
+                                }
+                                //myOpMode.telemetry.addData("RetRings: ", retRings);
+                                //myOpMode.telemetry.update();
+                                //if (numRings >= 5 && CurrentAutoState >= 1) { //Default is 5.  The below code will change to a number less than 5 allowing this section to only run once.
+                                if (retRings == Rings2.FOUR) {
+                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 10, 0.4, 12, 0, 1000);
+                                    cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 15, 0.4, 12, 0, 1000);
+                                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
+                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 50, 0.4, 0, 0, 4000);
+                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.SHOOT_RING, Drive.MoveType.REVERSE, .75, .85, 1.0, 0, 2000);
+                                    cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 20, 0.4, 12, 0, 1500);
+                                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 3, 0.4, 0, 0, 1000);
+                                    //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
+                                    cmd[11] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.1, 0, 0, 0, 500);
+                                    //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
+                                    cmd[12] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0, 0, 0, 0, 500);
+                                    cmd[13] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
+                                    cmd[14] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
+                                    numRings = 4;
+                                } else if (retRings == Rings2.ONE) {
+                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 8, 0.4, 0, 0, 1000);
+                                    cmd[4] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
+                                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
+                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
+                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 80, 0.4, 0, 0, 1000);
+                                    cmd[9] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
+                                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
+                                    cmd[11] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
+                                    cmd[12] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
+                                    cmd[13] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
+                                    cmd[14] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
+                                    numRings = 1;
+                                } else {
+                                    //new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 20, 0.4, 12, 0, 1500),
+                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.FORWARD, 60, 0.4, 12, 0, 3000);
+                                    cmd[4] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 11, 0.4, 0, 0, 1000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 0, 0, 0, 0, 2000);
+                                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 12, 0.4, 0, 0, 1000);
+                                    //for SHOOT_RING State Value 1 = Shooter Power, Value 2 = Intake Power, Value 3 = Ring deflector Position.
+                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, .80, .85, 1.0, 0, 2000);
+                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 7, 0.4, 0, 0, 5000);
+                                    cmd[9] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
+                                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
+                                    cmd[11] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
+                                    cmd[12] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
+                                    cmd[13] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
+                                    cmd[14] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
+                                    numRings = 0;
+                                }
+                            }
+                            //}
+                        }//purposly making this part of the move.
                     case MOVE:
                         if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
                             robotDrive.move(cmd[CurrentAutoState].moveType, (int) cmd[CurrentAutoState].value1, cmd[CurrentAutoState].value2);
@@ -375,7 +543,7 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                         }
                         break;
                     case MOVE_COLOR:
-                        if (currentColor == Color.YELLOW) {
+                        if (currentColor == AutonomousStatesJK2019.Color.YELLOW) {
                             robotDrive.move(Drive.MoveType.STOP, 0, 0);
                             stage_complete = true;
                         } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
@@ -412,32 +580,52 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                             stage_complete = true;
                         }
                         break;
-                            /*
-                            if (stageTime < SHOOTER_SPOOL_TIME) {
-                                //robotDrive.move(cmd_NONE[CurrentAutoState].moveType, (int)0, 0);
-                                shooterPower = cmd_NONE[CurrentAutoState].value1;
-                                intakePower = 0.0;
-                                ringDeflectorPosition = cmd_NONE[CurrentAutoState].value3;
-                            } else if (stageTime < FIRE_RING_TIME && stageTime >= SHOOTER_SPOOL_TIME) {
-                                //robotDrive.move(cmd_NONE[CurrentAutoState].moveType, (int)0, 0);
-                                shooterPower = cmd_NONE[CurrentAutoState].value1;
-                                intakePower = cmd_NONE[CurrentAutoState].value2;
-                            } else {
-                                //robotDrive.move(cmd_NONE[CurrentAutoState].moveType, (int)0, 0);
-                                shooterPower = 0;
-                                intakePower = 0;
-                                if (CurrentAutoState < (cmd_NONE.length - 1)) {
-                                    CurrentAutoState++;
-                                }
-                            }
-                            if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
-                                shooterPower = 0;
-                                intakePower = 0;
-                                //robotDrive.move(Drive.MoveType.STOP, 0, 0);
-                                stage_complete = true;
-                            }
-                            */
                     // Same call, have two to make autonomous code easier to read
+                    case MOVE_CAMERA_X:
+                        if (posX > cmd[CurrentAutoState].value3 && cmd[CurrentAutoState].value4 == 0) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        } else if (posX < cmd[CurrentAutoState].value3 && cmd[CurrentAutoState].value4 > 0) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                            robotDrive.move(cmd[CurrentAutoState].moveType, (int) cmd[CurrentAutoState].value1, cmd[CurrentAutoState].value2);
+                        }
+                        if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        }
+                        break;
+                    case MOVE_CAMERA_Y:
+                        if (posY > cmd[CurrentAutoState].value3 && cmd[CurrentAutoState].value4 == 0) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        } else if (posY < cmd[CurrentAutoState].value3 && cmd[CurrentAutoState].value4 > 0) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                            robotDrive.move(cmd[CurrentAutoState].moveType, (int) cmd[CurrentAutoState].value1, cmd[CurrentAutoState].value2);
+                        }
+                        if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        }
+                        break;
+                    case MOVE_CAMERA_H:
+                        if (posH > cmd[CurrentAutoState].value1 && cmd[CurrentAutoState].value4 == 0) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        } else if (posH < cmd[CurrentAutoState].value1 && cmd[CurrentAutoState].value4 > 0) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
+                            robotDrive.move(cmd[CurrentAutoState].moveType, (int) cmd[CurrentAutoState].value1, cmd[CurrentAutoState].value2);
+                        }
+                        if (robotDrive.getMoveStatus() == Drive.MoveStatus.COMPLETE) {
+                            robotDrive.move(Drive.MoveType.STOP, 0, 0);
+                            stage_complete = true;
+                        }
+                        break;
                     case PAUSE:
                     case WAIT:
                     default:
@@ -468,11 +656,11 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                 LastMotor = CurrentTime;
                 robotDrive.update();
 
-                //robot.transportIntake.setPower(intakePower);
-                //robot.frontShooter.setPower(shooterPower);
-                //robot.backShooter.setPower(shooterPower);
-                //robot.wobbleGoalMotor.setPower(0.3);
-                //lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
+                robot.transportIntake.setPower(intakePower);
+                robot.frontShooter.setPower(shooterPower);
+                robot.backShooter.setPower(shooterPower);
+                robot.wobbleGoalMotor.setPower(0.3);
+                lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
             }
 
             /* ***************************************************
@@ -493,13 +681,8 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
              ****************************************************/
             if (CurrentTime - LastTelemetry > TELEMETRYPERIOD) {
                 LastTelemetry = CurrentTime;
-
-                //OpenVC needed.
-                telemetry.addData("Analysis", retRings);
-                telemetry.addData("Position", retRings);
+                telemetry.addData("RetRing", retRings);
                 telemetry.addData("numRings ", numRings);
-
-
                 telemetry.addData("Color1       : ", currentColor);
                 telemetry.addData("WobbleArm    : ", wobbleTarget);
                 telemetry.addData("Shooter      : ", shooterPower);
@@ -523,71 +706,34 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
     public static int blueCnt = 0;
     public static int yellowCnt = 0;
 
-    public static Color DetectColor(int hueIn) {
+    public static AutonomousStatesJK2019.Color DetectColor(int hueIn) {
         final int blueMin = 197; //Blue Starts at 197deg and goes to 217deg.
         final int blueMax = 217;
         final int redMin = 351; //Red Starts at 351deg and wraps around to 11deg.
         final int redMax = 11;
-        final int yellowMin = 102; //Yellow Starts at 102deg and goes to 122deg. Although we want white, we named this yellow.
-        final int yellowMax = 122;
+        final int yellowMin = 141; //Yellow Starts at 102deg and goes to 122deg. Although we want white, we named this yellow.
+        final int yellowMax = 165;
 
-        Color detectedColor = Color.ERROR;
+
+        AutonomousStatesJK2019.Color detectedColor = AutonomousStatesJK2019.Color.ERROR;
 
         //ensure blueCnt,redCnt,yellowCnt are always greater than 0
 
 
         if (hueIn >= blueMin && hueIn <= blueMax) {
-            detectedColor = Color.BLUE;
+            detectedColor = AutonomousStatesJK2019.Color.BLUE;
         } else if (hueIn >= redMin || hueIn <= redMax) //Red is a special value when you consider it with the hue values since it wraps around. So we used "OR" to deterimine instead of &&
         {
-            detectedColor = Color.RED;
+            detectedColor = AutonomousStatesJK2019.Color.RED;
         } else if (hueIn >= yellowMin && hueIn <= yellowMax) {
-            detectedColor = Color.YELLOW;
+            detectedColor = AutonomousStatesJK2019.Color.YELLOW;
         } else {
-            detectedColor = Color.NOCOLOR;
+            detectedColor = AutonomousStatesJK2019.Color.NOCOLOR;
         }
 
         return (detectedColor);
     }
 
-
-    //OpenCV needed
-    public void setupOpMode() {
-
-    }
-
-    /**
-     * Initialize the Vuforia localization engine.
-     */
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-
-        //Comment/uncomment the next two lines for an external webcam vs a phones back camera.
-        //parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
-    }
-
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.8f;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
-    }
 
 
 }
