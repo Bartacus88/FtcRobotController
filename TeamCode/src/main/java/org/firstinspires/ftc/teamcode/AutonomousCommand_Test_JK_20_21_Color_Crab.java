@@ -8,11 +8,12 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 @Autonomous(name = "JK Auto Shoot Rog First", group = "Pushbot")
-//@Disabled
+@Disabled
 @SuppressWarnings("WeakerAccess")
 public class AutonomousCommand_Test_JK_20_21_Color_Crab extends LinearOpMode {
 

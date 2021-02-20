@@ -30,7 +30,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @SuppressWarnings("WeakerAccess")
 @TeleOp(name = "Ring Stack Detect", group = "HardwarePushbot")
-//@Disabled
+@Disabled
 public class Driver_RingStackDetection extends LinearOpMode {
     private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive         = new Drive();
