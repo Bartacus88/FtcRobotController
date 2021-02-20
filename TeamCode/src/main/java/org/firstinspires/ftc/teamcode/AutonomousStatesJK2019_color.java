@@ -96,9 +96,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 
 public class AutonomousStatesJK2019_color {
     //Define Robot Hardware and classes here
-    private HardwareDef_Bart_20_21 robot = new HardwareDef_Bart_20_21();
+    private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive = new Drive();
-    //LinearActuator lineAct = new LinearActuator();
+    LinearActuator lineAct = new LinearActuator();
 
     //Define all of the available states for AutoState.   Add new states before PAUSE
     public enum AutoStates {MOVE, PAUSE, SHOOT_RING, MOVE_COLOR, MOVE_WOBBLE_ARM, WAIT;}
@@ -151,7 +151,7 @@ public class AutonomousStatesJK2019_color {
 
     public void runOpMode(LinearOpMode opMode, HardwareMap hardwareMap, AutoCommand cmd[]) {
 
-        HardwareDef_Bart_20_21.STATUS retVal;
+        HardwareDef_20_21.STATUS retVal;
         /*
          * Initialize all of the robot hardware.
          * The init() method of the hardware class does all the work here
@@ -235,11 +235,11 @@ public class AutonomousStatesJK2019_color {
         double shooterPower = 0.0;
         double intakePower = 0.0;
         double ringDeflectorPosition = 0.0;
-//        robot.backShooter.setPower(0);
-//        robot.frontShooter.setPower(0);
-//        robot.transportIntake.setPower(0);
-//        robot.wobbleGoalMotor.setTargetPosition(0); //Must state that our initial position is refered to as "0" or the "datum"
-//        lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1, 1440, 1, opMode, true);
+        robot.backShooter.setPower(0);
+        robot.frontShooter.setPower(0);
+        robot.transportIntake.setPower(0);
+        robot.wobbleGoalMotor.setTargetPosition(0); //Must state that our initial position is refered to as "0" or the "datum"
+        lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1, 1440, 1, opMode, true);
 
         //long shootRingTime = 0;
         final long FIRE_RING_TIME = 10 * NAVPERIOD;
@@ -576,11 +576,11 @@ public class AutonomousStatesJK2019_color {
                 LastMotor = CurrentTime;
                 robotDrive.update();
 
-//                robot.transportIntake.setPower(intakePower);
-//                robot.frontShooter.setPower(shooterPower);
-//                robot.backShooter.setPower(shooterPower);
-//                robot.wobbleGoalMotor.setPower(0.3);
-//                lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
+                robot.transportIntake.setPower(intakePower);
+                robot.frontShooter.setPower(shooterPower);
+                robot.backShooter.setPower(shooterPower);
+                robot.wobbleGoalMotor.setPower(0.3);
+                lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
             }
 
             /* ***************************************************

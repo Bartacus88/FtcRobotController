@@ -77,17 +77,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
-import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.List;
 
@@ -99,7 +88,7 @@ import java.util.List;
 public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
 
     //Define Robot Hardware and classes here
-    private HardwareDef_Bart_20_21 robot = new HardwareDef_Bart_20_21();
+    private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive = new Drive();
     LinearActuator lineAct = new LinearActuator();
 
@@ -144,7 +133,7 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
 
     public void runOpMode() {
 
-        HardwareDef_Bart_20_21.STATUS retVal;
+        HardwareDef_20_21.STATUS retVal;
         /*
          * Initialize all of the robot hardware.
          * The init() method of the hardware class does all the work here
@@ -448,9 +437,6 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                                 stage_complete = true;
                             }
                             */
-                    case OPEN_CV:
-
-                        break;
                     // Same call, have two to make autonomous code easier to read
                     case PAUSE:
                     case WAIT:
