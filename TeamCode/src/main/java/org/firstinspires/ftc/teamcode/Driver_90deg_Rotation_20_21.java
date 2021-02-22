@@ -39,7 +39,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 @TeleOp(name = "JK Drive Opmode Sideways JS Swapped Bart Bot", group = "HardwarePushbot")
 @Disabled
 public class Driver_90deg_Rotation_20_21 extends LinearOpMode {
-    private HardwareDef_20_21_Bart robot = new HardwareDef_20_21_Bart();
+    private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive = new Drive();
     private GamepadDrive gamepadDrive = new GamepadDrive();
 //    LinearActuator lineAct = new LinearActuator();
@@ -96,7 +96,7 @@ public class Driver_90deg_Rotation_20_21 extends LinearOpMode {
 
     public void runOpMode() {
 
-        HardwareDef_20_21_Bart.STATUS retVal;
+        HardwareDef_20_21.STATUS retVal;
         /*
          * Initialize all of the robot hardware.
          * The init() method of the hardware class does all the work here

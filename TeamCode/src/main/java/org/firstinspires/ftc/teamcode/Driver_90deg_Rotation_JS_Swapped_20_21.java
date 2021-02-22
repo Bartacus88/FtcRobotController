@@ -375,11 +375,13 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     //If "CONTROLLERPERIOD" is 20 (meaning 20ms) That means 50 periods occur in one second (1000ms/20ms).
                     //0.000125%/period * 20 * 50periods = 12.5% increase in angle (45deg) after one second.
                     wobbleTarget += 0.000125 * CONTROLLERPERIOD;
+                    wobbleTarget = Math.min(0.59, wobbleTarget);   //Limit on wobble goal arm goin up.
                     lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad2.b) {
                     // same as for increment.
                     wobbleTarget -= 0.000125 * CONTROLLERPERIOD;
+                    wobbleTarget = Math.max(-0.02, wobbleTarget);   //Limit on the wobble goal going down.
                     lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
 
