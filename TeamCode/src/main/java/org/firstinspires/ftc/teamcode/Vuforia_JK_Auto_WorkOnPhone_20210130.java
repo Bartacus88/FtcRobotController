@@ -262,8 +262,8 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
         lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1, 1440, 1, this, true);
 
         //long shootRingTime = 0;
-        final long FIRE_RING_TIME = 10 * NAVPERIOD;
-        final long SHOOTER_SPOOL_TIME = 5 * NAVPERIOD;
+        final long FIRE_RING_TIME = 50 * NAVPERIOD;
+        final long SHOOTER_SPOOL_TIME = 10 * NAVPERIOD;
         //final long SHOOT_RING_MAX_TIME = 25 * NAVPERIOD;
 
         double wobbleTarget = 0.0;
@@ -273,10 +273,10 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
          * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
          * If no camera monitor is desired, use the parameter-less constructor instead (commented out below).
          */
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        //int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
-        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraDirection = CAMERA_CHOICE;
@@ -491,7 +491,7 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                                     cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 40, 0.4, 0, 0, 4000);
                                     cmd[8] = new AutoCommand(AutonomousStates.AutoStates.SHOOT_RING, Drive.MoveType.REVERSE, .75, .85, 1.0, 0, 2000);
                                     cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 30, 0.4, 60, 0, 1500);
-                                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 3, 0.4, 0, 0, 1000);
+                                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 0, 0, 1000);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
                                     cmd[11] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.1, 0, 0, 0, 500);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
@@ -507,8 +507,8 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                                     cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
                                     cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 15, 0.4, 12, 0, 1000);
                                     cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
-                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 50, 0.4, 0, 0, 4000);
-                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.SHOOT_RING, Drive.MoveType.REVERSE, .75, .85, 1.0, 0, 2000);
+                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 50, 0.4, 0, 0, 2000);
+                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.SHOOT_RING, Drive.MoveType.REVERSE, .75, .85, 1.0, 0, 1000);
                                     cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 20, 0.4, 40, 0, 1500);
                                     cmd[10] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 3, 0.4, 0, 0, 1000);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
@@ -520,7 +520,7 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                                     cmd[15] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[16] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[17] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
-                                    numRings = 4;
+                                    numRings = 1;
                                 } else {
                                     //new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 20, 0.4, 12, 0, 1500),
                                     cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 10, 0.4, 12, 0, 1000);
@@ -582,6 +582,8 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                         if (stageTime < FIRE_RING_TIME && stageTime >= SHOOTER_SPOOL_TIME) {
                             shooterPower = cmd[CurrentAutoState].value1;
                             intakePower = cmd[CurrentAutoState].value2;
+                        } else if (stageTime > FIRE_RING_TIME) {
+                            stage_complete = true;
                         }
 
                         if (stageTime >= cmd[CurrentAutoState].timeLimit) {
