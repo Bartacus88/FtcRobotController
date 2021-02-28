@@ -337,43 +337,16 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 LastController = CurrentTime;
 
                 //Start shooter before intake moves rings to shooter.
-                if (gamepad1.a || gamepad2.a) {
-                    shooterPower = Math.max(0.2, intakePower);
-                } else {
-                    shooterPower = 0;
-                }
-
-
-                if (gamepad2.left_trigger > 0.05) {
-                    intakePower = (gamepad2.left_trigger * -0.75);
-                    shooterPower = intakePower;
-                } else if (gamepad1.right_trigger > 0.05 || gamepad2.right_trigger > 0.05) {
-                    intakePower = Math.max(gamepad1.right_trigger, gamepad2.right_trigger) * shooterIntakePowerSetting;
+                if (gamepad1.left_trigger > 0.05) {
+                    intakePower = (gamepad1.left_trigger * -1);
+                } else if (gamepad1.right_trigger > 0.05) {
+                    intakePower = gamepad1.right_trigger;
                 } else {
                     intakePower = 0;
                 }
-
-                //New Idea for shooting/intaking rings on controller 2.
-                //Proportional control forwards and backwards for shooter (left) and intake (right) using the joysticks
-                // This would allow the running of the shooter backwards while picking up rings,
-                // So that the first ring does not fire until ready.
-                // if this is implemented it may be best to comment out the above shooter code.
-                /*
-                if (Math.abs(gamepad2.left_stick_y) > 0.05)
-                {
-                    shooterPower = gamepad2.left_stick_y;
-                }
-                if (Math.abs(gamepad2.right_stick_y) > 0.05)
-                {
-                    intakePower = gamepad2.right_stick_y;
-                }
-                 */
-
                 if (gamepad2.x) {
                     //Move position is in percentage. Increase angle by 0.000125% for every cycle the gamepad2.a button is pressed.
-                    // Equation: Incrementor*CONTROLLERPERIOD*PeriodsButtonIsPressed
-                    //If "CONTROLLERPERIOD" is 20 (meaning 20ms) That means 50 periods occur in one second (1000ms/20ms).
-                    //0.000125%/period * 20 * 50periods = 12.5% increase in angle (45deg) after one second.
+                    // Equation: Incrementor*CONTROLLERPERIOD*PeriodsButtonIsPressed If "CONTROLLERPERIOD" is 20 (meaning 20ms) That means 50 periods occur in one second (1000ms/20ms) 0.000125%/period * 20 * 50periods = 12.5% increase in angle (45deg) after one second.
                     wobbleTarget += 0.000125 * CONTROLLERPERIOD;
                     wobbleTarget = Math.min(0.59, wobbleTarget);   //Limit on wobble goal arm goin up.
                     lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
@@ -384,9 +357,29 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     wobbleTarget = Math.max(-0.02, wobbleTarget);   //Limit on the wobble goal going down.
                     lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
+                if (gamepad2.dpad_up) {
+                    shooterPower = 0.95;
+                }
+
+                if (gamepad2.dpad_left) {
+
+                    shooterPower = 0.85;
+                }
+
+                if (gamepad2.dpad_down) {
+                    shooterPower = 0.75;
+                }
+
+                if (gamepad2.dpad_right) {
+                    shooterPower = 0.65;
+                }
+
+                if (!gamepad2.dpad_left && !gamepad2.dpad_right && !gamepad2.dpad_up && !gamepad2.dpad_down) {
+                    shooterPower = 0;
+                }
 
                 //Do we want to remove the ability for controller one to move the wobble arm?
-                if (gamepad1.b && posX < 65535) {
+/*               if (gamepad1.b && posX < 65535) {
                     autoAlignAsserted = true;
 
                     if (hAxisComplete && xAxisComplete && yAxisComplete) {
@@ -481,44 +474,7 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                     yAxisComplete = false;
                     hAxisComplete = false;
                     trackStep = 11;
-                }
-                if (gamepad1.x) {
-                    //Move position is in percentage.  Therefore don't give it 160 for 160 deg.  Give it 160/360 = 0.444
-                    //lineAct.move(0.444, LinearActuator.MOVETYPE.AUTOMATIC);
-                }
-                if (gamepad1.y) {
-                    //Move position is in percentage.  Therefore don't give it 85 for 85 deg.  Give it 150/360 =  0.236
-                    //lineAct.move(0.236, LinearActuator.MOVETYPE.AUTOMATIC);
-                }
-                if (gamepad1.right_bumper) {
-                    //Move position is in percentage.  Therefore don't give it 140 for 140 deg.  Give it 140/360 = 0.388
-                    //lineAct.move(0.388, LinearActuator.MOVETYPE.AUTOMATIC);
-                }
-                if (gamepad1.left_bumper) {
-                    //Move position is in percentage.  Therefore don't give it 110 for 110 deg.  Give it 110/360 = 0.361
-                    //lineAct.move(0.305, LinearActuator.MOVETYPE.AUTOMATIC);
-                }
-                if (gamepad2.dpad_up) {
-                    shooterIntakePowerSetting = 0.95;
-                }
-                if (gamepad2.dpad_left) {
-                    shooterIntakePowerSetting = 0.85;
-                }
-                if (gamepad2.dpad_down) {
-                    shooterIntakePowerSetting = 0.75;
-                }
-
-                //Ring Deflector Servo
-                if (gamepad2.right_bumper) {
-                    //servo
-                    ringDeflectorPosition += 0.00125 * CONTROLLERPERIOD;
-                    ringDeflectorPosition = Math.min(1, ringDeflectorPosition);
-                }
-                if (gamepad2.left_bumper) {
-                    ringDeflectorPosition -= 0.00125 * CONTROLLERPERIOD;
-                    ringDeflectorPosition = Math.max(0, ringDeflectorPosition);
-                }
-
+                } */
 
             }
 
