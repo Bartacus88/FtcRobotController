@@ -489,7 +489,7 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                                     cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 15, 0.4, 12, 0, 1000);
                                     cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
 
-                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 35, 0.4, 67, 0, 1500);
+                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 35, 0.4, 69, 0, 1500);
                                     cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 5, 0.4, 0, 0, 1000);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
                                     cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.1, 0, 0, 0, 500);
@@ -510,7 +510,7 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                                     cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
 
                                     cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 20, 0.4, 40, 0, 4000);
-                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 1, 0.4, 0, 0, 500);
+                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 4, 0.4, 0, 0, 500);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
                                     cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.1, 0, 0, 0, 500);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
@@ -529,7 +529,7 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                                     cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
                                     cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 15, 0.4, 12, 0, 1000);
                                     cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
-                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 50, 0.4, 12, 0, 4000);
+                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 50, 0.4, 16, 0, 4000);
                                     cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 3, 0.4, 0, 0, 1000);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
                                     cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.1, 0, 0, 0, 500);
