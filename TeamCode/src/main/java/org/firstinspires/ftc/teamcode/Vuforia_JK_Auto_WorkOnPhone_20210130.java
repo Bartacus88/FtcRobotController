@@ -213,7 +213,7 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
         dParm.minStartPower = 0.1;
         dParm.minTurnPower = 0.1;
         dParm.opMode = this;
-        dParm.debug = true;
+        dParm.debug = false;
         dParm.useEncoderRatio = false;
         if (robotDrive.configureDrive(dParm)) {
             telemetry.addData("Status   ", "Robot Initialized!");
@@ -700,15 +700,16 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
              ****************************************************/
             if (CurrentTime - LastTelemetry > TELEMETRYPERIOD) {
                 LastTelemetry = CurrentTime;
+                telemetry.clearAll();
                 telemetry.addData("RetRing", retRings);
-                telemetry.addData("numRings ", numRings);
-                telemetry.addData("Color1       : ", currentColor);
+//                telemetry.addData("numRings ", numRings);
+//                telemetry.addData("Color1       : ", currentColor);
                 telemetry.addData("WobbleArm    : ", wobbleTarget);
-                telemetry.addData("Shooter      : ", shooterPower);
-                telemetry.addData("Intake       : ", intakePower);
+//                telemetry.addData("Shooter      : ", shooterPower);
+//                telemetry.addData("Intake       : ", intakePower);
                 telemetry.addData("Current index: ", CurrentAutoState);
                 telemetry.addData("Current State: ", cmd[CurrentAutoState].state);
-                telemetry.addData("Time Limit   : ", cmd[CurrentAutoState].timeLimit);
+//                telemetry.addData("Time Limit   : ", cmd[CurrentAutoState].timeLimit);
                 telemetry.addData("Value 1      : ", cmd[CurrentAutoState].value1);
                 telemetry.addData("Value 2      : ", cmd[CurrentAutoState].value2);
                 telemetry.addData("Value 3      : ", cmd[CurrentAutoState].value3);
