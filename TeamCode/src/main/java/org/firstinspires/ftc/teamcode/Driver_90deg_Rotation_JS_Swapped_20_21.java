@@ -354,24 +354,24 @@ public class Driver_90deg_Rotation_JS_Swapped_20_21 extends LinearOpMode {
                 if (gamepad2.b) {
                     // same as for increment.
                     wobbleTarget -= 0.000125 * CONTROLLERPERIOD;
-                    wobbleTarget = Math.max(-0.02, wobbleTarget);   //Limit on the wobble goal going down.
+                    wobbleTarget = Math.max(-0.11, wobbleTarget);   //Limit on the wobble goal going down.
                     lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
                 }
                 if (gamepad2.dpad_up) {
-                    shooterPower = 0.95;
+                    shooterPower = 1;
                 }
 
                 if (gamepad2.dpad_left) {
 
-                    shooterPower = 0.85;
+                    shooterPower = 0.95;
                 }
 
                 if (gamepad2.dpad_down) {
-                    shooterPower = 0.75;
+                    shooterPower = 0.85;
                 }
 
                 if (gamepad2.dpad_right) {
-                    shooterPower = 0.65;
+                    shooterPower = 0.75;
                 }
 
                 if (!gamepad2.dpad_left && !gamepad2.dpad_right && !gamepad2.dpad_up && !gamepad2.dpad_down) {
