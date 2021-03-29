@@ -8,11 +8,12 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 
 @Autonomous(name = "JK Vuforia Auto Test", group = "Pushbot")
-//@Disabled
+@Disabled
 @SuppressWarnings("WeakerAccess")
 public class AutonomousCommand_Test_JK_20_21_Camera_Crab extends LinearOpMode {
 
