@@ -96,7 +96,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
-@Autonomous(name = "JK Auto Vuforia TF and Pos Old", group = "Pushbot")
+@Autonomous(name = "JK Auto Vuforia Zig Zag", group = "Pushbot")
 @SuppressWarnings("WeakerAccess")
 public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
     //Define Robot Hardware and classes here
@@ -512,8 +512,8 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                                     cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
 
                                     cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 25, 0.4, 45, 0, 4000);
-                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 14, 0, 0, 0, 1000);
-                                    // Rishabh and Ehren Think we should change value 1 of cmd[8] to 14
+                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 18, 0, 0, 0, 1000);
+
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
                                     cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.1, 0, 0, 0, 500);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
