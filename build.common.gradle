@@ -106,6 +106,7 @@ repositories {
     flatDir {
         dirs rootProject.file('libs')
     }
-    jcenter() //OpenCV tutorial https://www.youtube.com/watch?v=-QFoOCoaW7I&ab_channel=Wizards.exeFTC%239794
+    //Remove Open CV errors for good. 
+    //jcenter() //OpenCV tutorial https://www.youtube.com/watch?v=-QFoOCoaW7I&ab_channel=Wizards.exeFTC%239794
 }
 apply from: 'build.release.gradle'
