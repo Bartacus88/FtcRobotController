@@ -96,7 +96,7 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
-@Autonomous(name = "JK Auto Vuforia Drive Along Wall", group = "Pushbot")
+@Autonomous(name = "JK Auto Vuforia Drive Along Wall RED", group = "Pushbot")
 @SuppressWarnings("WeakerAccess")
 public class Vuforia_JK_Auto_Drive_Along_Wall extends LinearOpMode {
     //Define Robot Hardware and classes here

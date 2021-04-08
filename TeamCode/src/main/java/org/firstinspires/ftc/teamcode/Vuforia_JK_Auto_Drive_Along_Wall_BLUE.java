@@ -67,12 +67,9 @@ package org.firstinspires.ftc.teamcode;
  */
 
 
-import android.os.SystemClock;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -96,9 +93,9 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
 import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
-@Autonomous(name = "JK Auto Vuforia Zig Zag RED", group = "Pushbot")
+@Autonomous(name = "JK Auto Vuforia Drive Along Wall BLUE", group = "Pushbot")
 @SuppressWarnings("WeakerAccess")
-public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
+public class Vuforia_JK_Auto_Drive_Along_Wall_BLUE extends LinearOpMode {
     //Define Robot Hardware and classes here
     private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive = new Drive();
@@ -167,9 +164,9 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
 
 
     public void runOpMode() {
-        cmd[0] = new AutoCommand(AutonomousStates.AutoStates.RING_DETECT, Drive.MoveType.CRABLEFT, 5, 0.3, 0, 0, 2000);
-        cmd[1] = new AutoCommand(AutonomousStates.AutoStates.RING_DETECT, Drive.MoveType.CRABRIGHT, 5, 0.3, 0, 0, 1000);
-        cmd[2] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 1, 0.1, 0, 0, 1000);
+        cmd[0] = new AutoCommand(AutonomousStates.AutoStates.RING_DETECT, Drive.MoveType.REVERSE, 4, 0.3, 0, 0, 500);
+        cmd[1] = new AutoCommand(AutonomousStates.AutoStates.RING_DETECT, Drive.MoveType.CRABLEFT, 10, 0.3, 0, 0, 1000);
+        cmd[2] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 10, 0.3, 0, 0, 1000);
         HardwareDef_20_21.STATUS retVal;
         /*
          * Initialize all of the robot hardware.
@@ -281,7 +278,7 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
         parameters.cameraDirection = CAMERA_CHOICE;
         //Comment/uncomment the next line for an external webcam vs a phones back camera.
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 2");
 
         // Make sure extended tracking is disabled for this example.
         parameters.useExtendedTracking = false;
@@ -484,62 +481,58 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                                 //myOpMode.telemetry.update();
                                 //if (numRings >= 5 && CurrentAutoState >= 1) { //Default is 5.  The below code will change to a number less than 5 allowing this section to only run once.
                                 if (retRings == Rings2.FOUR) {
-                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 10, 0.4, 12, 0, 1000);
-                                    cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
-                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 15, 0.4, 12, 0, 1000);
-                                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
-
-                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 35, 0.4, 69, 0, 1500);
-                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 7, 0.4, 0, 0, 1000);
+                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 15, 0.4, 12, 0, 1000);
+                                    cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABRIGHT, 60, 0.4, 70, 0, 2000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 5, 0.4, 12, 0, 1000);
+                                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.10, 0, 0, 0, 500);
+                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.11, 0, 0, 0, 500);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
-                                    cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.1, 0, 0, 0, 500);
+                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
+                                    cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 30, 0.4, 18, 1, 1000);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
-                                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.11, 0, 0, 0, 500);
-                                    cmd[11] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 4, 0.4, 12, 0, 500);
-                                    //cmd[12] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABRIGHT, 25, 0.4, 18, 1, 4000);
-                                    cmd[12] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 25, 0.4, 18, 1, 4000);
-                                    cmd[13] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0, 0, 0, 0, 500);
+                                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0, 0, 0, 0, 500);
+                                    cmd[11] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
+                                    cmd[12] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
+                                    cmd[13] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[14] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[15] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[16] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[17] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     numRings = 4;
                                 } else if (retRings == Rings2.ONE) {
-
-                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 10, 0.4, 12, 0, 1000);
-                                    cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
-                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 15, 0.4, 12, 0, 1000);
-                                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
-
-                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 25, 0.4, 45, 0, 4000);
-                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 18, 0, 0, 0, 1000);
-
+                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 15, 0.4, 12, 0, 1000);
+                                    cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABRIGHT, 45, 0.4, 36, 0, 2000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 25, 0.2, 12, 0, 2000);
+                                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.10, 0, 0, 0, 500);
+                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.11, 0, 0, 0, 500);
+                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
-                                    cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.1, 0, 0, 0, 500);
+                                    cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 12, 0.4, 18, 1, 1000);
+                                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0, 0, 0, 0, 500);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
-                                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.11, 0, 0, 0, 500);
-                                    cmd[11] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 12, 0.4, 12, 0, 1000);
-                                    cmd[12] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 18, 0.4, 12, 1, 4000);
-                                    cmd[13] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0, 0, 0, 0, 500);
+                                    cmd[11] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
+                                    cmd[12] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
+                                    cmd[13] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[14] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[15] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[16] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[17] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     numRings = 1;
+                                    // Always seems to see none, still trying to see if we can mechanically fix that...
                                 } else {
                                     //new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 20, 0.4, 12, 0, 1500),
-                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 10, 0.4, 12, 0, 1000);
-                                    cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
-                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 15, 0.4, 12, 0, 1000);
-                                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
-                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 50, 0.4, 20, 0, 4000);
-                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 0, 0, 1000);
+                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 15, 0.4, 12, 0, 1000);
+                                    cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABRIGHT, 37, 0.4, 20, 0, 1000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 5, 0.4, 12, 0, 1000);
+                                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.10, 0, 0, 0, 500);
+                                    cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.11, 0, 0, 0, 500);
+                                    cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
-                                    cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.1, 0, 0, 0, 500);
+                                    cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0, 0, 0, 0, 500);
                                     //                            for MOVE_WOBBLE_ARM, State Value 1 = Wobble Arm Position.
-                                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.11, 0, 0, 0, 500);
-                                    cmd[11] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
-                                    cmd[12] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0, 0, 0, 0, 500);
+                                    cmd[10] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
+                                    cmd[11] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
+                                    cmd[12] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[13] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[14] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
                                     cmd[15] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 5000);
@@ -752,7 +745,6 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
 
         return (detectedColor);
     }
-
 
 
 }
