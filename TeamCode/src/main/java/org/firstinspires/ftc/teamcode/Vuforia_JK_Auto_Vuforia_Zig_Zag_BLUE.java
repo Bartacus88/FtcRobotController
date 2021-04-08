@@ -68,6 +68,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -94,12 +95,13 @@ import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
 
 @Autonomous(name = "Vuforia_JK_Auto_Vuforia_Zig_Zag_BLUE", group = "Pushbot")
+//@Disabled
 @SuppressWarnings("WeakerAccess")
 public class Vuforia_JK_Auto_Vuforia_Zig_Zag_BLUE extends LinearOpMode {
     //Define Robot Hardware and classes here
-    private HardwareDef_20_21_Bart robot = new HardwareDef_20_21_Bart();
+    private HardwareDef_20_21 robot = new HardwareDef_20_21();
     private Drive robotDrive = new Drive();
-//    LinearActuator lineAct = new LinearActuator();
+    LinearActuator lineAct = new LinearActuator();
 
     //Define all of the available states for AutoState.   Add new states before PAUSE
     public enum AutoStates {MOVE, RAISELIFT, LOWERLIFT, RING_DETECT, PIVOT_ARM, RAIL_CASCADE, MOVE_COLOR, SHOOT_RING, MOVE_WOBBLE_ARM, MOVE_CAMERA_Y, MOVE_CAMERA_H, MOVE_CAMERA_X, PAUSE, WAIT;}
@@ -167,7 +169,7 @@ public class Vuforia_JK_Auto_Vuforia_Zig_Zag_BLUE extends LinearOpMode {
         cmd[0] = new AutoCommand(AutonomousStates.AutoStates.RING_DETECT, Drive.MoveType.CRABRIGHT, 5, 0.3, 0, 0, 2000);
         cmd[1] = new AutoCommand(AutonomousStates.AutoStates.RING_DETECT, Drive.MoveType.CRABLEFT, 5, 0.3, 0, 0, 1000);
         cmd[2] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 1, 0.1, 0, 0, 1000);
-        HardwareDef_20_21_Bart.STATUS retVal;
+        HardwareDef_20_21.STATUS retVal;
         /*
          * Initialize all of the robot hardware.
          * The init() method of the hardware class does all the work here
@@ -252,11 +254,11 @@ public class Vuforia_JK_Auto_Vuforia_Zig_Zag_BLUE extends LinearOpMode {
         double shooterPower = 0.0;
         double intakePower = 0.0;
         double ringDeflectorPosition = 0.0;
-//        robot.backShooter.setPower(0);
-//        robot.frontShooter.setPower(0);
-//        robot.transportIntake.setPower(0);
-//        robot.wobbleGoalMotor.setTargetPosition(0); //Must state that our initial position is refered to as "0" or the "datum"
-//        lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1, 1440, 1, this, true);
+        robot.backShooter.setPower(0);
+        robot.frontShooter.setPower(0);
+        robot.transportIntake.setPower(0);
+        robot.wobbleGoalMotor.setTargetPosition(0); //Must state that our initial position is refered to as "0" or the "datum"
+        lineAct.initialize(robot.wobbleGoalMotor, LinearActuator.ACTUATOR_TYPE.MOTOR_ONLY, 1, 1440, 1, this, true);
 
         //long shootRingTime = 0;
         final long FIRE_RING_TIME = 50 * NAVPERIOD;
@@ -672,11 +674,11 @@ public class Vuforia_JK_Auto_Vuforia_Zig_Zag_BLUE extends LinearOpMode {
                 LastMotor = CurrentTime;
                 robotDrive.update();
 
-//                robot.transportIntake.setPower(intakePower);
-//                robot.frontShooter.setPower(shooterPower);
-//                robot.backShooter.setPower(shooterPower);
-//                robot.wobbleGoalMotor.setPower(0.3);
-//                lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
+                robot.transportIntake.setPower(intakePower);
+                robot.frontShooter.setPower(shooterPower);
+                robot.backShooter.setPower(shooterPower);
+                robot.wobbleGoalMotor.setPower(0.3);
+                lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
             }
 
             /* ***************************************************

@@ -373,7 +373,7 @@ public class AutonomousStatesJK2019_color {
             if (CurrentTime - LastSensor > SENSORPERIOD) {
                 LastSensor = CurrentTime;
                 android.graphics.Color.RGBToHSV(robot.color1.red() * 8, robot.color1.green() * 8, robot.color1.blue() * 8, hsvValues);
-                currentColor = DetectColor((int) hsvValues[0], (int) hsvValues[1]);
+                currentColor = DetectColor((int) hsvValues[0], (double) hsvValues[1]);
 
                 //Below is Vuforia
                 targetsUltimateGoal.activate();
@@ -623,7 +623,7 @@ public class AutonomousStatesJK2019_color {
     public static int blueCnt = 0;
     public static int yellowCnt = 0;
 
-    public static AutonomousStatesJK2019.Color DetectColor(int hueIn, int satIn) {
+    public static AutonomousStatesJK2019.Color DetectColor(int hueIn, double satIn) {
         final int blueMin = 197; //Blue Starts at 197deg and goes to 217deg.
         final int blueMax = 217;
         final int redMin = 351; //Red Starts at 351deg and wraps around to 11deg.
