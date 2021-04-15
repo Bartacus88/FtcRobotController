@@ -484,9 +484,9 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                                 //myOpMode.telemetry.update();
                                 //if (numRings >= 5 && CurrentAutoState >= 1) { //Default is 5.  The below code will change to a number less than 5 allowing this section to only run once.
                                 if (retRings == Rings2.FOUR) {
-                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 6, 0.4, 12, 0, 100);
+                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 1, 0.4, 12, 0, 100);
                                     cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
-                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 15, 0.4, 12, 0, 1000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 20, 0.4, 12, 0, 1000);
                                     cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
 
                                     cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 35, 0.4, 69, 0, 1500);
@@ -506,9 +506,9 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                                     numRings = 4;
                                 } else if (retRings == Rings2.ONE) {
 
-                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 6, 0.4, 12, 0, 100);
+                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 1, 0.4, 12, 0, 100);
                                     cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
-                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 15, 0.4, 12, 0, 1000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 20, 0.4, 12, 0, 1000);
                                     cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
 
                                     cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 25, 0.4, 45, 0, 4000);
@@ -528,9 +528,9 @@ public class Vuforia_JK_Auto_WorkOnPhone_20210130 extends LinearOpMode {
                                     numRings = 1;
                                 } else {
                                     //new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 20, 0.4, 12, 0, 1500),
-                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 6, 0.4, 12, 0, 100);
+                                    cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 1, 0.4, 12, 0, 100);
                                     cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
-                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 15, 0.4, 12, 0, 1000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABLEFT, 20, 0.4, 12, 0, 1000);
                                     cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
                                     cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 50, 0.4, 20, 0, 4000);
                                     cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 0, 0, 1000);

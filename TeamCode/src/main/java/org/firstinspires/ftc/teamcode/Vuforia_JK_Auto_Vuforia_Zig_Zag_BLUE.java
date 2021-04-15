@@ -485,7 +485,7 @@ public class Vuforia_JK_Auto_Vuforia_Zig_Zag_BLUE extends LinearOpMode {
                                 if (retRings == Rings2.FOUR) {
                                     cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 1, 0.4, 12, 0, 100);
                                     cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
-                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 15, 0.4, 12, 0, 1000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 20, 0.4, 12, 0, 1000);
                                     cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
 
                                     cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABRIGHT, 35, 0.4, 69, 0, 1500);
@@ -507,7 +507,7 @@ public class Vuforia_JK_Auto_Vuforia_Zig_Zag_BLUE extends LinearOpMode {
 
                                     cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 1, 0.4, 12, 0, 100);
                                     cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
-                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 15, 0.4, 12, 0, 1000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 20, 0.4, 12, 0, 1000);
                                     cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
 
                                     cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABRIGHT, 25, 0.4, 45, 0, 4000);
@@ -529,7 +529,7 @@ public class Vuforia_JK_Auto_Vuforia_Zig_Zag_BLUE extends LinearOpMode {
                                     //new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 20, 0.4, 12, 0, 1500),
                                     cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 1, 0.4, 12, 0, 100);
                                     cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 10, 0.4, 12, 0, 1000);
-                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 15, 0.4, 12, 0, 1000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.CRABRIGHT, 20, 0.4, 12, 0, 1000);
                                     cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
                                     cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABRIGHT, 50, 0.4, 20, 0, 4000);
                                     cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 0, 0, 1000);
