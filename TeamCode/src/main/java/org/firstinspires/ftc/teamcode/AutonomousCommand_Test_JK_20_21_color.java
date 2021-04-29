@@ -152,11 +152,11 @@ public class AutonomousCommand_Test_JK_20_21_color extends LinearOpMode {
         ERROR,   //1
         BLUE,    //2
         RED,     //3
-        YELLOW   //4
+        WHITE   //4
     }
 
     float hsvValues[] = {0F, 0F, 0F};
-    AutonomousStatesJK2019.Color currentColor = AutonomousStatesJK2019.Color.ERROR;
+    Color currentColor = Color.ERROR;
     int numRings = 5;
 
     public enum Rings2 {NONE, ONE, FOUR;}
@@ -167,8 +167,9 @@ public class AutonomousCommand_Test_JK_20_21_color extends LinearOpMode {
 
 
     public void runOpMode() {
-        cmd[0] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 75, 0.3, 0, 0, 500);
-        cmd[1] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.STOP, 6, 0.3, 0, 0, 1000);
+
+        cmd[0] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.STOP, 6, 0.3, 0, 0, 10000);
+        cmd[1] = new AutoCommand(AutonomousStates.AutoStates.MOVE_COLOR, Drive.MoveType.FORWARD, 70, 0.3, 0, 0, 500);
         cmd[2] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.STOP, 1, 0.3, 0, 0, 500);
         HardwareDef_20_21.STATUS retVal;
         /*
@@ -403,7 +404,7 @@ public class AutonomousCommand_Test_JK_20_21_color extends LinearOpMode {
             if (CurrentTime - LastSensor > SENSORPERIOD) {
                 LastSensor = CurrentTime;
                 android.graphics.Color.RGBToHSV(robot.color1.red() * 8, robot.color1.green() * 8, robot.color1.blue() * 8, hsvValues);
-                currentColor = DetectColor((int) hsvValues[0]);
+                currentColor = DetectColor((double) hsvValues[1]);
 
                 //Below is Vuforia
                 targetsUltimateGoal.activate();
@@ -466,7 +467,7 @@ public class AutonomousCommand_Test_JK_20_21_color extends LinearOpMode {
                         }
                         break;
                     case MOVE_COLOR:
-                        if (currentColor == AutonomousStatesJK2019.Color.YELLOW) {
+                        if (currentColor == Color.WHITE) {
                             robotDrive.move(Drive.MoveType.STOP, 0, 0);
                             stage_complete = true;
                         } else if (robotDrive.getMoveStatus() == Drive.MoveStatus.AVAILABLE) {
@@ -627,33 +628,15 @@ public class AutonomousCommand_Test_JK_20_21_color extends LinearOpMode {
         telemetry.update();
     }
 
-    public static int redCnt = 0;
-    public static int blueCnt = 0;
-    public static int yellowCnt = 0;
+    public static Color DetectColor(double satIn) {
+        final double whiteThreshold = 0.24; //determined from experiments
 
-    public static AutonomousStatesJK2019.Color DetectColor(int hueIn) {
-        final int blueMin = 197; //Blue Starts at 197deg and goes to 217deg.
-        final int blueMax = 217;
-        final int redMin = 351; //Red Starts at 351deg and wraps around to 11deg.
-        final int redMax = 11;
-        final int yellowMin = 141; //Yellow Starts at 102deg and goes to 122deg. Although we want white, we named this yellow.
-        final int yellowMax = 165;
+        Color detectedColor = Color.ERROR;
 
-
-        AutonomousStatesJK2019.Color detectedColor = AutonomousStatesJK2019.Color.ERROR;
-
-        //ensure blueCnt,redCnt,yellowCnt are always greater than 0
-
-
-        if (hueIn >= blueMin && hueIn <= blueMax) {
-            detectedColor = AutonomousStatesJK2019.Color.BLUE;
-        } else if (hueIn >= redMin || hueIn <= redMax) //Red is a special value when you consider it with the hue values since it wraps around. So we used "OR" to deterimine instead of &&
-        {
-            detectedColor = AutonomousStatesJK2019.Color.RED;
-        } else if (hueIn >= yellowMin && hueIn <= yellowMax) {
-            detectedColor = AutonomousStatesJK2019.Color.YELLOW;
+        if (satIn <= whiteThreshold) {
+            detectedColor = Color.WHITE;
         } else {
-            detectedColor = AutonomousStatesJK2019.Color.NOCOLOR;
+            detectedColor = Color.NOCOLOR;
         }
 
         return (detectedColor);

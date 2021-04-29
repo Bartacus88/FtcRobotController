@@ -167,8 +167,9 @@ public class AutonomousCommand_Test_JK_20_21_Color_Crab extends LinearOpMode {
 
 
     public void runOpMode() {
-        cmd[0] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 50, 0.3, 0, 0, 500);
-        cmd[1] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.STOP, 6, 0.3, 0, 0, 1000);
+
+        cmd[0] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.STOP, 6, 0.3, 0, 0, 10000);
+        cmd[1] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 50, 0.3, 0, 0, 500);
         cmd[2] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.STOP, 1, 0.3, 0, 0, 500);
         HardwareDef_20_21.STATUS retVal;
         /*
