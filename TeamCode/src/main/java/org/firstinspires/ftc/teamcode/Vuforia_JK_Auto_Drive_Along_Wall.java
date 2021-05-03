@@ -505,8 +505,8 @@ public class Vuforia_JK_Auto_Drive_Along_Wall extends LinearOpMode {
                                 } else if (retRings == Rings2.ONE) {
                                     cmd[3] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.FORWARD, 10, 0.4, 12, 0, 1000);
                                     cmd[4] = new AutoCommand(AutonomousStates.AutoStates.MOVE_CAMERA_X, Drive.MoveType.CRABLEFT, 46, 0.4, 36, 0, 2000);
-                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 28, 0.4, 0, 0, 2000);
-                                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
+                                    cmd[6] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 28, 0.4, 0, 0, 2000);
+                                    cmd[5] = new AutoCommand(AutonomousStates.AutoStates.WAIT, Drive.MoveType.STOP, 18, 0.4, 0, 0, 100);
                                     cmd[7] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.08, 0, 0, 0, 500);
                                     cmd[8] = new AutoCommand(AutonomousStates.AutoStates.MOVE_WOBBLE_ARM, Drive.MoveType.REVERSE, 0.16, 0, 0, 0, 500);
                                     cmd[9] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 13, 0.4, 12, 0, 1000);
