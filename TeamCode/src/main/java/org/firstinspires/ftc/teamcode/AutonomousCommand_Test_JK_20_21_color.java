@@ -168,8 +168,8 @@ public class AutonomousCommand_Test_JK_20_21_color extends LinearOpMode {
 
     public void runOpMode() {
 
-        cmd[0] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.STOP, 6, 0.3, 0, 0, 10000);
-        cmd[1] = new AutoCommand(AutonomousStates.AutoStates.MOVE_COLOR, Drive.MoveType.FORWARD, 70, 0.3, 0, 0, 500);
+        cmd[0] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.STOP, 6, 0.3, 0, 0, 7000);
+        cmd[1] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.REVERSE, 65, 0.3, 0, 0, 500);
         cmd[2] = new AutoCommand(AutonomousStates.AutoStates.MOVE, Drive.MoveType.STOP, 1, 0.3, 0, 0, 500);
         HardwareDef_20_21.STATUS retVal;
         /*
@@ -607,19 +607,19 @@ public class AutonomousCommand_Test_JK_20_21_color extends LinearOpMode {
              ****************************************************/
             if (CurrentTime - LastTelemetry > TELEMETRYPERIOD) {
                 LastTelemetry = CurrentTime;
-                telemetry.addData("RetRing", retRings);
-                telemetry.addData("numRings ", numRings);
+//                telemetry.addData("RetRing", retRings);
+//                telemetry.addData("numRings ", numRings);
                 telemetry.addData("Color1       : ", currentColor);
-                telemetry.addData("WobbleArm    : ", wobbleTarget);
-                telemetry.addData("Shooter      : ", shooterPower);
-                telemetry.addData("Intake       : ", intakePower);
-                telemetry.addData("Current index: ", CurrentAutoState);
-                telemetry.addData("Current State: ", cmd[CurrentAutoState].state);
-                telemetry.addData("Time Limit   : ", cmd[CurrentAutoState].timeLimit);
-                telemetry.addData("Value 1      : ", cmd[CurrentAutoState].value1);
-                telemetry.addData("Value 2      : ", cmd[CurrentAutoState].value2);
-                telemetry.addData("Value 3      : ", cmd[CurrentAutoState].value3);
-                telemetry.addData("Value 4      : ", cmd[CurrentAutoState].value4);
+//                telemetry.addData("WobbleArm    : ", wobbleTarget);
+//                telemetry.addData("Shooter      : ", shooterPower);
+//                telemetry.addData("Intake       : ", intakePower);
+//                telemetry.addData("Current index: ", CurrentAutoState);
+//                telemetry.addData("Current State: ", cmd[CurrentAutoState].state);
+//                telemetry.addData("Time Limit   : ", cmd[CurrentAutoState].timeLimit);
+//                telemetry.addData("Value 1      : ", cmd[CurrentAutoState].value1);
+//                telemetry.addData("Value 2      : ", cmd[CurrentAutoState].value2);
+//                telemetry.addData("Value 3      : ", cmd[CurrentAutoState].value3);
+//                telemetry.addData("Value 4      : ", cmd[CurrentAutoState].value4);
                 telemetry.update();
             }
         } // end of while opmode is active
@@ -629,7 +629,7 @@ public class AutonomousCommand_Test_JK_20_21_color extends LinearOpMode {
     }
 
     public static Color DetectColor(double satIn) {
-        final double whiteThreshold = 0.24; //determined from experiments
+        final double whiteThreshold = 0.26; //determined from experiments
 
         Color detectedColor = Color.ERROR;
 
