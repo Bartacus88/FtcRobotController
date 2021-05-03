@@ -671,7 +671,7 @@ public class Vuforia_JK_Auto_Drive_Along_Wall_BLUE extends LinearOpMode {
                 robot.transportIntake.setPower(intakePower);
                 robot.frontShooter.setPower(shooterPower);
                 robot.backShooter.setPower(shooterPower);
-                robot.wobbleGoalMotor.setPower(0.3);
+                robot.wobbleGoalMotor.setPower(0.2);
                 lineAct.move(wobbleTarget, LinearActuator.MOVETYPE.AUTOMATIC);
             }
 
