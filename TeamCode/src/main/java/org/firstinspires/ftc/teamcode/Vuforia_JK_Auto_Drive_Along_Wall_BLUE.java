@@ -210,7 +210,7 @@ public class Vuforia_JK_Auto_Drive_Along_Wall_BLUE extends LinearOpMode {
         dParm.minStartPower = 0.1;
         dParm.minTurnPower = 0.1;
         dParm.opMode = this;
-        dParm.debug = true;
+        dParm.debug = false;
         dParm.useEncoderRatio = false;
         if (robotDrive.configureDrive(dParm)) {
             telemetry.addData("Status   ", "Robot Initialized!");
@@ -693,6 +693,7 @@ public class Vuforia_JK_Auto_Drive_Along_Wall_BLUE extends LinearOpMode {
              ****************************************************/
             if (CurrentTime - LastTelemetry > TELEMETRYPERIOD) {
                 LastTelemetry = CurrentTime;
+                telemetry.clear();
                 telemetry.addData("RetRing", retRings);
                 telemetry.addData("numRings ", numRings);
                 telemetry.addData("Color1       : ", currentColor);

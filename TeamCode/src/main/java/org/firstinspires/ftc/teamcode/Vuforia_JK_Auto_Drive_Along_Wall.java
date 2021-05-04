@@ -696,6 +696,7 @@ public class Vuforia_JK_Auto_Drive_Along_Wall extends LinearOpMode {
              ****************************************************/
             if (CurrentTime - LastTelemetry > TELEMETRYPERIOD) {
                 LastTelemetry = CurrentTime;
+                telemetry.clear();
                 telemetry.addData("RetRing", retRings);
                 telemetry.addData("numRings ", numRings);
                 telemetry.addData("Color1       : ", currentColor);
